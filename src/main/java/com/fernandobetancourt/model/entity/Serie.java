@@ -1,6 +1,7 @@
 package com.fernandobetancourt.model.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,12 +21,24 @@ public class Serie implements Serializable {
 	
 	private String name;
 
+	public Serie() {}
+
+	//Constructor with arguments to unit tests with id
+	public Serie(Long serieId, String name) {
+		super();
+		this.serieId = serieId;
+		this.name = name;
+	}
+	
+	//Constructor with arguments to unit tests with id
+	public Serie(String name) {
+		super();
+		this.name = name;
+	}
+
 	public Long getSerieId() {
 		return serieId;
 	}
-
-
-
 
 	public void setSerieId(Long serieId) {
 		this.serieId = serieId;
@@ -44,6 +57,26 @@ public class Serie implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, serieId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Serie other = (Serie) obj;
+		return Objects.equals(name, other.name) && Objects.equals(serieId, other.serieId);
+	}
+
+
 
 
 

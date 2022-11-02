@@ -1,6 +1,7 @@
 package com.fernandobetancourt.model.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,12 +27,27 @@ public class Group implements Serializable {
 	@JoinColumn(name = "serie_id", referencedColumnName = "serie_id")
 	private Serie serie;
 	
+	public Group() {}
+
+	//Constructor with arguments to unit tests with id
+	public Group(Long groupId, String name, Serie serie) {
+		super();
+		this.groupId = groupId;
+		this.name = name;
+		this.serie = serie;
+	}
+	
+	//Constructor with arguments to unit tests without id
+	public Group(String name, Serie serie) {
+		super();
+		this.name = name;
+		this.serie = serie;
+	}
 	
 
 	public Long getGroupId() {
 		return groupId;
 	}
-
 
 
 	public void setGroupId(Long groupId) {
@@ -63,6 +79,23 @@ public class Group implements Serializable {
 	}
 
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(groupId, name, serie);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Group other = (Group) obj;
+		return Objects.equals(groupId, other.groupId) && Objects.equals(name, other.name)
+				&& Objects.equals(serie, other.serie);
+	}
 
 	private static final long serialVersionUID = 1L;
 }

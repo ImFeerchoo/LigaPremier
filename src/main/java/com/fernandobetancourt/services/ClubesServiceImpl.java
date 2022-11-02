@@ -21,6 +21,12 @@ public class ClubesServiceImpl implements IClubesService {
 	
 	@Autowired
 	private IGroupsService groupsService;
+	
+	//Constructor to inject mocks
+	public ClubesServiceImpl(IClubesDao clubesDao, IGroupsService groupsService) {
+		this.clubesDao = clubesDao;
+		this.groupsService = groupsService;
+	}
 
 	// GET
 	

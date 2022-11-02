@@ -1,6 +1,7 @@
 package com.fernandobetancourt.model.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,7 +31,28 @@ public class Club implements Serializable {
 	@JoinColumn(name = "group_id", referencedColumnName = "group_id")
 	private Group group;
 	
+	public Club() {}
+
+	//Constructor with arguments to unit tests with id
+	public Club(String name, String stadium, String photo, Group group) {
+		super();
+		this.name = name;
+		this.stadium = stadium;
+		this.photo = photo;
+		this.group = group;
+	}
 	
+	//Constructor with arguments to unit tests without id
+		public Club(Long clubId, String name, String stadium, String photo, Group group) {
+			super();
+			this.clubId = clubId;
+			this.name = name;
+			this.stadium = stadium;
+			this.photo = photo;
+			this.group = group;
+		}
+
+
 
 	public Long getClubId() {
 		return clubId;
@@ -89,6 +111,31 @@ public class Club implements Serializable {
 	public void setGroup(Group group) {
 		this.group = group;
 	}
+	
+	
+
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(clubId, group, name, photo, stadium);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Club other = (Club) obj;
+		return Objects.equals(clubId, other.clubId) && Objects.equals(group, other.group)
+				&& Objects.equals(name, other.name) && Objects.equals(photo, other.photo)
+				&& Objects.equals(stadium, other.stadium);
+	}
+
+
 
 
 

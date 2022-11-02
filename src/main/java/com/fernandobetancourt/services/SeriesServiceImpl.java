@@ -18,6 +18,11 @@ public class SeriesServiceImpl implements ISeriesService {
 	@Autowired
 	private ISeriesDao seriesDao;
 	
+	//Constructor to inject mocks
+	public SeriesServiceImpl(ISeriesDao seriesDao) {
+		this.seriesDao = seriesDao;
+	}
+	
 	//GET
 
 	@Override
