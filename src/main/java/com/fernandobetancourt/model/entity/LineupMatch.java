@@ -20,34 +20,37 @@ public class LineupMatch implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "lineup_match_id")
 	private Long LineupMatchId;
-	
-	@Column(name="club_status")
+
+	@Column(name = "club_status")
 	private String clubStatus;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "match_id", referencedColumnName = "match_id")
 	private Match match;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "lineup_id", referencedColumnName = "lineup_id")
 	private Lineup lineup;
-	
-	
-	
+
 	public LineupMatch() {
-		
+
 	}
-	
+
 	public LineupMatch(Match match, Lineup lineup) {
 		this.match = match;
 		this.lineup = lineup;
 	}
-	
-	
-	
-	
+
 	public LineupMatch(String clubStatus, Match match, Lineup lineup) {
 		super();
+		this.clubStatus = clubStatus;
+		this.match = match;
+		this.lineup = lineup;
+	}
+
+	public LineupMatch(Long lineupMatchId, String clubStatus, Match match, Lineup lineup) {
+		super();
+		LineupMatchId = lineupMatchId;
 		this.clubStatus = clubStatus;
 		this.match = match;
 		this.lineup = lineup;
@@ -57,31 +60,21 @@ public class LineupMatch implements Serializable {
 		return LineupMatchId;
 	}
 
-
-
 	public void setLineupMatchId(Long lineupMatchId) {
 		LineupMatchId = lineupMatchId;
 	}
-
-
 
 	public Match getMatch() {
 		return match;
 	}
 
-
-
 	public void setMatch(Match match) {
 		this.match = match;
 	}
 
-
-
 	public Lineup getLineup() {
 		return lineup;
 	}
-
-
 
 	public void setLineup(Lineup lineup) {
 		this.lineup = lineup;
@@ -94,10 +87,6 @@ public class LineupMatch implements Serializable {
 	public void setClubStatus(String clubStatus) {
 		this.clubStatus = clubStatus;
 	}
-
-
-
-
 
 	private static final long serialVersionUID = 1L;
 

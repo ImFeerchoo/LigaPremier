@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.entity.Player;
-import com.fernandobetancourt.services.IClubesService;
 import com.fernandobetancourt.services.IPlayersService;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
@@ -30,9 +29,6 @@ public class PlayersRestController {
 
 	@Autowired
 	private IPlayersService playersService;
-	
-	@Autowired
-	private IClubesService clubesService;
 
 	@GetMapping("/players")
 	public ResponseEntity<?> getPlayers() {
@@ -64,20 +60,36 @@ public class PlayersRestController {
 
 	}
 
+//	@GetMapping("/playersClub/{clubId}")
+//	public ResponseEntity<?> getPlayersByClub(@PathVariable("clubId") Long clubId) {
+//
+//		Map<String, Object> response = new HashMap<>();
+//
+//		try {
+//			List<Player> players = this.playersService.getPlayersByClub(this.clubesService.getClubById(clubId));
+//			response.put("players", players);
+//			return new ResponseEntity<>(response, HttpStatus.OK);
+//		} catch (InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		}
+//
+//	}
+	
 	@GetMapping("/playersClub/{clubId}")
 	public ResponseEntity<?> getPlayersByClub(@PathVariable("clubId") Long clubId) {
-
+		
 		Map<String, Object> response = new HashMap<>();
-
+		
 		try {
-			List<Player> players = this.playersService.getPlayersByClub(this.clubesService.getClubById(clubId));
+			List<Player> players = this.playersService.getPlayersByClub(clubId);
 			response.put("players", players);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (InformationNotFoundException e) {
 			response.put("error", e.getMessage());
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
-
+		
 	}
 
 	@PostMapping("/player")

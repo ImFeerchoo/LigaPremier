@@ -17,14 +17,10 @@ public interface ILineupsPlayersService {
 			throws InformationNotFoundException, WritingInformationException;
 	
 	//PUT
-	public abstract LineupPlayer updateLineupPlayer(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException;
+//	public abstract LineupPlayer updateLineupPlayer(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException;
 	
 	//DELETE
-	public abstract LineupPlayer deleteLineupPlayer(Long id) throws InformationNotFoundException;
-	
-	//VALIDATIONS
-	public abstract boolean isLineupPlayerValidToSave(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isLineupPlayerValidToUpdate(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException;
-	public abstract LineupPlayer lineupPlayerExists(Long id) throws InformationNotFoundException;
+//	public abstract LineupPlayer deleteLineupPlayer(Long id) throws InformationNotFoundException;
+	public abstract List<LineupPlayer> deleteLineupsPlayers(List<Long> lineupPlayersIds) throws InformationNotFoundException;
 
 }

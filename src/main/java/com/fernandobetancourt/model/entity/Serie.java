@@ -76,8 +76,10 @@ public class Serie implements Serializable {
 		return Objects.equals(name, other.name) && Objects.equals(serieId, other.serieId);
 	}
 
-
-
+	@Override
+	public String toString() {
+		return "Serie [serieId=" + serieId + ", name=" + name + "]";
+	}
 
 
 

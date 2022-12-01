@@ -21,10 +21,5 @@ public interface ICoachingStaffsService {
 	
 	//DELETE
 	public abstract CoachingStaff deleteCoachingStaff(Long id) throws InformationNotFoundException;
-	
-	//VALIATIONS
-	public abstract boolean isCoachingStaffValidToSave(CoachingStaff coachingStaff) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isCoachingStaffValidToUpdate(CoachingStaff coachingStaff) throws InformationNotFoundException, WritingInformationException;
-	public abstract CoachingStaff coachingStaffExists(Long id) throws InformationNotFoundException;
 
 }

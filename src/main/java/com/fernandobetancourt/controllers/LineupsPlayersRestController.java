@@ -65,20 +65,20 @@ public class LineupsPlayersRestController {
 		
 	}
 	
-	@DeleteMapping("/lineupsPlayers/{lineupPlayerId}")
-	public ResponseEntity<?> deleteLineupPlayer(@PathVariable("lineupPlayerId") Long lineupPlayerId){
-		
-		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			LineupPlayer lineupPlayerDeleted = this.lineupsPlayersService.deleteLineupPlayer(lineupPlayerId);
-			response.put("LineupPlayer", lineupPlayerDeleted);
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		}catch(InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-		
-	}
+//	@DeleteMapping("/lineupsPlayers/{lineupPlayerId}")
+//	public ResponseEntity<?> deleteLineupPlayer(@PathVariable("lineupPlayerId") Long lineupPlayerId){
+//		
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			LineupPlayer lineupPlayerDeleted = this.lineupsPlayersService.deleteLineupPlayer(lineupPlayerId);
+//			response.put("LineupPlayer", lineupPlayerDeleted);
+//			return new ResponseEntity<>(response, HttpStatus.OK);
+//		}catch(InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		}
+//		
+//	}
 	
 }

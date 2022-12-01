@@ -78,7 +78,6 @@ public class Group implements Serializable {
 		this.serie = serie;
 	}
 
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(groupId, name, serie);
@@ -96,6 +95,14 @@ public class Group implements Serializable {
 		return Objects.equals(groupId, other.groupId) && Objects.equals(name, other.name)
 				&& Objects.equals(serie, other.serie);
 	}
+
+	@Override
+	public String toString() {
+		return "Group [groupId=" + groupId + ", name=" + name + ", serie=" + serie + "]";
+	}
+
+
+
 
 	private static final long serialVersionUID = 1L;
 }

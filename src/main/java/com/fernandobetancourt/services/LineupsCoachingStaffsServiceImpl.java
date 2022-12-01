@@ -123,8 +123,12 @@ public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsS
 
 		}
 
-		this.coachingStaffsService.coachingStaffExists(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
-		this.lineupsService.lineupExists(lineupCoachingStaff.getLineup().getLineupId());
+		//coachingStaffExists se remplaza con getCoachingStaff
+//		this.coachingStaffsService.coachingStaffExists(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
+		this.coachingStaffsService.getCoachingStaff(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
+		//lineupExists se remplaza con getLineup
+//		this.lineupsService.lineupExists(lineupCoachingStaff.getLineup().getLineupId());
+		this.lineupsService.getLineup(lineupCoachingStaff.getLineup().getLineupId());
 
 		return true;
 	}
@@ -145,8 +149,12 @@ public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsS
 		}
 
 		this.lineupCoachingStaffExists(lineupCoachingStaff.getLineupCoachingStaffId());
-		this.coachingStaffsService.coachingStaffExists(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
-		this.lineupsService.lineupExists(lineupCoachingStaff.getLineup().getLineupId());
+		//coachingStaffExists se remplazó con getCoachingStaff
+//		this.coachingStaffsService.coachingStaffExists(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
+		this.coachingStaffsService.getCoachingStaff(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
+		//lineupExists se remplaza con getLineup
+//		this.lineupsService.lineupExists(lineupCoachingStaff.getLineup().getLineupId());
+		this.lineupsService.getLineup(lineupCoachingStaff.getLineup().getLineupId());
 
 		return true;
 	}

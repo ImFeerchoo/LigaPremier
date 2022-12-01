@@ -85,8 +85,13 @@ public class CardsServiceImpl implements ICardsService {
 			
 		}
 		
-		Player playerRecovered = this.playersService.playerExists(card.getPlayer().getPlayerId());
-		Match matchRecovered = this.matchesService.matchExists(card.getMatch().getMatchId());
+//		Player playerRecovered = this.playersService.playerExists(card.getPlayer().getPlayerId());
+		//Player exists se remplaza con getPlayerById
+		Player playerRecovered = this.playersService.getPlayerById(card.getPlayer().getPlayerId());
+		//Cambie el matchExists por getMatch
+//		Match matchRecovered = this.matchesService.matchExists(card.getMatch().getMatchId());
+		Match matchRecovered = this.matchesService.getMatch(card.getMatch().getMatchId());
+		
 		this.playerBelongToMatch(playerRecovered, matchRecovered);
 		
 		return true;
@@ -107,8 +112,13 @@ public class CardsServiceImpl implements ICardsService {
 		}
 		
 		this.cardExists(card.getCardId());
-		Player playerRecovered = this.playersService.playerExists(card.getPlayer().getPlayerId());
-		Match matchRecovered = this.matchesService.matchExists(card.getMatch().getMatchId());
+//		Player playerRecovered = this.playersService.playerExists(card.getPlayer().getPlayerId());
+		//Player exists se remplaza con getPlayerById
+		Player playerRecovered = this.playersService.getPlayerById(card.getPlayer().getPlayerId());
+		//Cambie el matchExists por getMatch
+//		Match matchRecovered = this.matchesService.matchExists(card.getMatch().getMatchId());
+		Match matchRecovered = this.matchesService.getMatch(card.getMatch().getMatchId());
+		
 		this.playerBelongToMatch(playerRecovered, matchRecovered);
 		
 		return true;

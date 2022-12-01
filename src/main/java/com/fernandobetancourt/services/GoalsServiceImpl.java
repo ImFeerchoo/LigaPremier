@@ -86,8 +86,9 @@ public class GoalsServiceImpl implements IGoalsService {
 			throw new AddingGoalException("Goal is not valid to save");
 					
 		}
-				
-		goal.setPlayer(this.playersService.playerExists(goal.getPlayer().getPlayerId()));
+		//Player exists se remplaza con getPlayerById
+//		goal.setPlayer(this.playersService.playerExists(goal.getPlayer().getPlayerId()));
+		goal.setPlayer(this.playersService.getPlayerById(goal.getPlayer().getPlayerId()));
 				
 		return true;
 	}
@@ -106,7 +107,9 @@ public class GoalsServiceImpl implements IGoalsService {
 		}
 		
 		this.goalExists(goal.getGoalId());
-		goal.setPlayer(this.playersService.playerExists(goal.getPlayer().getPlayerId()));
+		//Player exists se remplaza con getPlayerById
+//		goal.setPlayer(this.playersService.playerExists(goal.getPlayer().getPlayerId()));
+		goal.setPlayer(this.playersService.getPlayerById(goal.getPlayer().getPlayerId()));
 		
 		return true;
 	}

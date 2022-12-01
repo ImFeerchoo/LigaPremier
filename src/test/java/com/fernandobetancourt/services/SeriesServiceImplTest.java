@@ -46,18 +46,32 @@ class SeriesServiceImplTest {
 		verify(seriesDao).findAll();
 	}
 
+//	@Test
+//	void testGetAllSeriesEmptyList() {
+//		// Given
+//		when(seriesDao.findAll()).thenReturn(Collections.emptyList());
+//
+//		// When
+//		List<Serie> series = seriesService.getAllSeries();
+//
+//		// Then
+//		assertTrue(series.isEmpty());
+//		assertEquals(0, series.size());
+//
+//		verify(seriesDao).findAll();
+//	}
+	
 	@Test
 	void testGetAllSeriesEmptyList() {
 		// Given
 		when(seriesDao.findAll()).thenReturn(Collections.emptyList());
-
-		// When
-		List<Serie> series = seriesService.getAllSeries();
-
+		
 		// Then
-		assertTrue(series.isEmpty());
-		assertEquals(0, series.size());
-
+		assertThrows(SerieNotFoundException.class, () -> {
+			// When
+			seriesService.getAllSeries();
+		});
+		
 		verify(seriesDao).findAll();
 	}
 

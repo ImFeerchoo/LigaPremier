@@ -22,7 +22,7 @@ public interface ISeriesService {
 	public abstract Serie deleteSerie(Long id) throws InformationNotFoundException;
 	
 	//VALIDATIONS
-	public abstract boolean isSerieValidToSave(Serie serie);
-	public abstract boolean isSerieValidToUpdate(Serie serie);
+//	public abstract boolean isSerieValidToSave(Serie serie);
+//	public abstract boolean isSerieValidToUpdate(Serie serie);
 	
 }

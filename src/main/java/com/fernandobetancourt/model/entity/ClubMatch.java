@@ -23,19 +23,19 @@ public class ClubMatch implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "local_club_id", referencedColumnName = "club_id")
 	private Club localClub;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "visitor_club_id", referencedColumnName = "club_id")
 	private Club visitorClub;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "match_id", referencedColumnName = "match_id")
 	private Match match;
-	
+
 	public ClubMatch() {
-		
+
 	}
-	
+
 	public ClubMatch(Club localClub, Club visitorClub, Match match) {
 		super();
 		this.localClub = localClub;
@@ -43,64 +43,45 @@ public class ClubMatch implements Serializable {
 		this.match = match;
 	}
 
-
-
+	public ClubMatch(Long clubMatchId, Club localClub, Club visitorClub, Match match) {
+		super();
+		this.clubMatchId = clubMatchId;
+		this.localClub = localClub;
+		this.visitorClub = visitorClub;
+		this.match = match;
+	}
 
 	public Long getClubMatchId() {
 		return clubMatchId;
 	}
 
-
-
-
 	public void setClubMatchId(Long clubMatchId) {
 		this.clubMatchId = clubMatchId;
 	}
-
-
-
 
 	public Club getLocalClub() {
 		return localClub;
 	}
 
-
-
-
 	public void setLocalClub(Club localClub) {
 		this.localClub = localClub;
 	}
-
-
-
 
 	public Club getVisitorClub() {
 		return visitorClub;
 	}
 
-
-
-
 	public void setVisitorClub(Club visitorClub) {
 		this.visitorClub = visitorClub;
 	}
-
-
-
 
 	public Match getMatch() {
 		return match;
 	}
 
-
-
-
 	public void setMatch(Match match) {
 		this.match = match;
 	}
-
-
-
 
 	private static final long serialVersionUID = 1L;
 

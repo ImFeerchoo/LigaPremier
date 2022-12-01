@@ -109,10 +109,16 @@ public class ChangesServiceImpl implements IChangesService {
 			throw new AddingChangeException("Change is not valid to save");
 			
 		}
+		//Player exists se remplaza con getPlayerById
+//		change.setPlayerIn(this.playersService.playerExists(change.getPlayerIn().getPlayerId()));
+		change.setPlayerIn(this.playersService.getPlayerById(change.getPlayerIn().getPlayerId()));
+		//Player exists se remplaza con getPlayerById
+//		change.setPlayerOut(this.playersService.playerExists(change.getPlayerOut().getPlayerId()));
+		change.setPlayerOut(this.playersService.getPlayerById(change.getPlayerOut().getPlayerId()));
 		
-		change.setPlayerIn(this.playersService.playerExists(change.getPlayerIn().getPlayerId()));
-		change.setPlayerOut(this.playersService.playerExists(change.getPlayerOut().getPlayerId()));
-		change.setMatch(this.matchesService.matchExists(change.getMatch().getMatchId()));
+		//Cambie el matchExists por getMatch
+//		change.setMatch(this.matchesService.matchExists(change.getMatch().getMatchId()));
+		change.setMatch(this.matchesService.getMatch(change.getMatch().getMatchId()));
 		
 		return true;
 	}
@@ -134,9 +140,16 @@ public class ChangesServiceImpl implements IChangesService {
 		}
 		
 		this.changeExists(change.getChangeId());
-		change.setPlayerIn(this.playersService.playerExists(change.getPlayerIn().getPlayerId()));
-		change.setPlayerOut(this.playersService.playerExists(change.getPlayerOut().getPlayerId()));
-		change.setMatch(this.matchesService.matchExists(change.getMatch().getMatchId()));
+		//Player exists se remplaza con getPlayerById
+//		change.setPlayerIn(this.playersService.playerExists(change.getPlayerIn().getPlayerId()));
+		change.setPlayerIn(this.playersService.getPlayerById(change.getPlayerIn().getPlayerId()));
+		//Player exists se remplaza con getPlayerById
+//		change.setPlayerOut(this.playersService.playerExists(change.getPlayerOut().getPlayerId()));
+		change.setPlayerOut(this.playersService.getPlayerById(change.getPlayerOut().getPlayerId()));
+		
+		//Cambie el matchExists por getMatch
+//		change.setMatch(this.matchesService.matchExists(change.getMatch().getMatchId()));
+		change.setMatch(this.matchesService.getMatch(change.getMatch().getMatchId()));
 		
 		return true;
 	}

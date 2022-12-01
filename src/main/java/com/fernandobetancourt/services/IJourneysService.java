@@ -21,9 +21,4 @@ public interface IJourneysService {
 	//DELETE
 	public abstract Journey deleteJourney(Long id) throws InformationNotFoundException;
 	
-	//VALIDATIONS
-	public abstract boolean isJourneyValidToSave(Journey journey) throws InformationNotFoundException;
-	public abstract boolean isJourneyValidToUpdate(Journey journey) throws InformationNotFoundException;
-	public abstract Journey journeyExists(Long id) throws InformationNotFoundException;
-	
 }

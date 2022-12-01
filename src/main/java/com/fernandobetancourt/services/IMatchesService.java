@@ -9,7 +9,7 @@ import com.fernandobetancourt.model.entity.Match;
 public interface IMatchesService {
 	
 	//GET	
-	public abstract List<Match> getAllMatches(Long id);
+	public abstract List<Match> getAllMatches();
 	public abstract Match getMatch(Long id) throws InformationNotFoundException;
 
 	//POST
@@ -20,9 +20,4 @@ public interface IMatchesService {
 	
 	//DELETE
 	public abstract Match deleteMatch(Long id) throws InformationNotFoundException;
-
-	//VALIDATIONS
-	public abstract boolean isMatchValidToSave(Match match, Long localClubId, Long visitorClubId) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isMatchValidToUpdate(Match match, Long localClubId, Long visitorClubId) throws InformationNotFoundException, WritingInformationException;
-	public abstract Match matchExists(Long id) throws InformationNotFoundException;
 }

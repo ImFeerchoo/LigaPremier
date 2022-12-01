@@ -20,10 +20,4 @@ public interface IClubesScoreboardsService {
 	//DELETE
 	public abstract ClubScoreboard deleteClubScoreboard(Long id) throws InformationNotFoundException;
 	
-	//VALIDATIONS
-	//Voy a lanzar las excepciones desde las validaciones
-	public abstract boolean isClubScoreboardValidToSave(ClubScoreboard clubScoreboard) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isClubScoreboardValidToUpdate(ClubScoreboard clubScoreboard) throws InformationNotFoundException, WritingInformationException;
-	public abstract ClubScoreboard clubScoreboardExists(Long id) throws InformationNotFoundException;
-	
 }

@@ -41,66 +41,34 @@ public class JourneysRestController {
 	
 	@GetMapping("/journeys/{journeyId}")
 	public ResponseEntity<?> getJourney(@PathVariable("journeyId") Long id){
-		
 		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Journey journeyRecovered = this.journeysService.getJourney(id);
-			response.put("journey", journeyRecovered);
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		}catch(InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-		
+		Journey journeyRecovered = this.journeysService.getJourney(id);
+		response.put("journey", journeyRecovered);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@PostMapping("/journeys")
 	public ResponseEntity<?> addJourney(@RequestBody Journey journey){
 		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Journey journeyAdded = this.journeysService.addJourney(journey);
-			response.put("journey", journeyAdded);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		}catch(InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}catch(WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		Journey journeyAdded = this.journeysService.addJourney(journey);
+		response.put("journey", journeyAdded);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/journeys")
 	public ResponseEntity<?> updateJourney(@RequestBody Journey journey){
 		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Journey journeyUpdated = this.journeysService.updateJourney(journey);
-			response.put("journey", journeyUpdated);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		}catch(InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}catch(WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		Journey journeyUpdated = this.journeysService.updateJourney(journey);
+		response.put("journey", journeyUpdated);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping("/journeys/{journeyId}")
 	public ResponseEntity<?> deleteJourney(@PathVariable("journeyId") Long id){
 		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Journey journeyDeleted = this.journeysService.deleteJourney(id);
-			response.put("journey", journeyDeleted);
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		}catch(InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
+		Journey journeyDeleted = this.journeysService.deleteJourney(id);
+		response.put("journey", journeyDeleted);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 }

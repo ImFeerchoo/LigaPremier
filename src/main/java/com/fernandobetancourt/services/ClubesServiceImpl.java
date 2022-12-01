@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fernandobetancourt.exceptions.AddingClubException;
 import com.fernandobetancourt.exceptions.ClubNotFoundException;
 import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.dao.IClubesDao;
 import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.Group;
+import com.fernandobetancourt.validators.ClubValidator;
 
 @Service
 public class ClubesServiceImpl implements IClubesService {
@@ -22,35 +22,46 @@ public class ClubesServiceImpl implements IClubesService {
 	@Autowired
 	private IGroupsService groupsService;
 	
-	//Constructor to inject mocks
-	public ClubesServiceImpl(IClubesDao clubesDao, IGroupsService groupsService) {
-		this.clubesDao = clubesDao;
-		this.groupsService = groupsService;
-	}
+	@Autowired
+	private ClubValidator clubValidator;
 
 	// GET
 	
 	@Override
 	public List<Club> getClubes() {
-		return this.clubesDao.findAll();
+		List<Club> clubes = clubesDao.findAll();
+		if(clubes.isEmpty()) throw new ClubNotFoundException("There are not clubes available");
+		return clubes;
 	}
+	
+//	@Override
+//	public List<Club> getClubesByGroup(Long groupId) throws InformationNotFoundException {
+//		Group groupRecovered = this.groupsService.getGroup(groupId);
+//		return this.clubesDao.findByGroup(groupRecovered);
+//	}
 	
 	@Override
 	public List<Club> getClubesByGroup(Long groupId) throws InformationNotFoundException {
 		Group groupRecovered = this.groupsService.getGroup(groupId);
-		return this.clubesDao.findByGroup(groupRecovered);
+		List<Club> clubes = clubesDao.findByGroup(groupRecovered);
+		if(clubes.isEmpty()) {
+			var sb = new StringBuilder();
+			sb.append("Clubes of ").append(groupRecovered.getName()).append(" has not been found");
+			throw new ClubNotFoundException(sb.toString());
+		}
+		return clubes;
 	}
 
 	@Override
 	public Club getClubById(Long id) throws InformationNotFoundException {
-		return this.clubExists(id);
+		return clubValidator.clubExists(id);
 	}
 
 	// POST
 
 	@Override
 	public Club addClub(Club club) throws InformationNotFoundException, WritingInformationException {
-		this.isClubValidToSave(club);
+		clubValidator.isClubValidToSave(club);
 		return this.clubesDao.save(club);
 	}
 
@@ -58,7 +69,7 @@ public class ClubesServiceImpl implements IClubesService {
 
 	@Override
 	public Club updateClub(Club club) throws InformationNotFoundException, WritingInformationException {
-		this.isClubValidToUpdate(club);
+		clubValidator.isClubValidToUpdate(club);
 		return this.clubesDao.save(club);
 	}
 
@@ -66,56 +77,8 @@ public class ClubesServiceImpl implements IClubesService {
 
 	@Override
 	public Club deleteClub(Long id) throws InformationNotFoundException {
-		Club clubDeleted = this.clubExists(id);
+		Club clubDeleted = clubValidator.clubExists(id);
 		this.clubesDao.deleteById(id);
 		return clubDeleted;
-	}
-
-	// VALIDATIONS
-
-	@Override
-	public boolean isClubValidToSave(Club club) throws InformationNotFoundException, WritingInformationException {
-
-		if(		club == null ||
-				club.getName() == null || club.getName().trim().equals("") ||
-				club.getStadium() == null || club.getStadium().trim().equals("") ||
-				club.getGroup() == null || club.getGroup().getGroupId() == null || club.getGroup().getGroupId() < 1
-				) {
-			
-			throw new AddingClubException("Club is not valid to save");
-			
-		}
-		
-		this.groupsService.groupExists(club.getGroup().getGroupId());
-		
-		return true;
-	}
-
-	@Override
-	public boolean isClubValidToUpdate(Club club) throws InformationNotFoundException, WritingInformationException {
-		
-		if(		club == null ||
-				club.getClubId() == null || club.getClubId() < 1 ||
-				club.getName() == null || club.getName().trim().equals("") ||
-				club.getStadium() == null || club.getStadium().trim().equals("") ||
-				club.getGroup() == null || club.getGroup().getGroupId() == null || club.getGroup().getGroupId() < 1
-				) {
-			
-			throw new AddingClubException("Club is not valid to save");
-			
-		}
-		
-		this.clubExists(club.getClubId());
-		this.groupsService.groupExists(club.getGroup().getGroupId());
-		
-		return true;
-	}
-
-	@Override
-	public Club clubExists(Long id) throws InformationNotFoundException {
-		return this.clubesDao.findById(id).orElseThrow(() -> {
-			StringBuilder sb = new StringBuilder().append("Club with id ").append(id).append(" has not been found");
-			throw new ClubNotFoundException(sb.toString());
-		});
 	}
 }

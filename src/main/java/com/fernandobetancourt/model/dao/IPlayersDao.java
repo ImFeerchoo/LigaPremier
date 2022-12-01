@@ -13,6 +13,7 @@ import com.fernandobetancourt.model.entity.Player;
 public interface IPlayersDao extends JpaRepository<Player, Long> {
 
 	public abstract Optional<Player> findByNames(String names);
-	public abstract Optional<List<Player>> findByClub(Club club);
+//	public abstract Optional<List<Player>> findByClub(Club club);
+	public abstract List<Player> findByClub(Club club);
 	
 }

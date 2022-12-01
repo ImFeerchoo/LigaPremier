@@ -10,8 +10,5 @@ public interface ILineupsService {
 	
 	//DELETE
 	public abstract Lineup deleteLineup(Long id) throws InformationNotFoundException;
-
-	//VALIDATIONS
-	public abstract Lineup lineupExists(Long id) throws InformationNotFoundException;
 	
 }

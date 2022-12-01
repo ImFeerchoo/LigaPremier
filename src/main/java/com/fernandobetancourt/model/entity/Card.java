@@ -34,8 +34,19 @@ public class Card implements Serializable {
 	@JoinColumn(name = "match_id", referencedColumnName = "match_id")
 	private Match match;
 	
+	public Card() {}
 	
-	
+	public Card(Long cardId, Integer minute, String color, String photo, Player player, Match match) {
+		this.cardId = cardId;
+		this.minute = minute;
+		this.color = color;
+		this.photo = photo;
+		this.player = player;
+		this.match = match;
+	}
+
+
+
 	public Long getCardId() {
 		return cardId;
 	}

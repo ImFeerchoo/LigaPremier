@@ -19,18 +19,13 @@ import com.fernandobetancourt.model.entity.LineupMatch;
 import com.fernandobetancourt.model.entity.LineupPlayer;
 import com.fernandobetancourt.model.entity.Match;
 import com.fernandobetancourt.model.entity.Player;
+import com.fernandobetancourt.validators.LineupPlayerValidator;
 
 @Service
 public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 	
 	@Autowired
 	private ILineupsPlayersDao lineupsPlayersDao;
-	
-	@Autowired
-	private IPlayersService playersService;
-	
-	@Autowired
-	private ILineupsService lineupsService;
 	
 	@Autowired
 	private ILineupsMatchesService lineupsMatchesService;
@@ -41,12 +36,15 @@ public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 	@Autowired
 	private IClubesMatchesService clubesMatchesService;
 	
+	@Autowired
+	private LineupPlayerValidator lineupPlayerValidator;
+	
 
 	//GET
 	
 	@Override
 	public LineupPlayer getLineupPlayer(Long id) throws InformationNotFoundException {
-		return this.lineupPlayerExists(id);
+		return lineupPlayerValidator.lineupPlayerExists(id);
 	}
 	
 	@Override
@@ -58,13 +56,10 @@ public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 		List<LineupPlayer> lineupsPlayers = new ArrayList<>();
 		
 		lineupsMatches.forEach(lineupMatch -> {
-			
-			lineupsPlayers.addAll(this.lineupsPlayersDao.findByLineup(lineupMatch.getLineup())
-												.orElseThrow(() -> {
-													throw new LineupPlayerNotFoundException("LineupsPlayers not found");
-												}));
-			
+			lineupsPlayers.addAll(this.lineupsPlayersDao.findByLineup(lineupMatch.getLineup()));
 		});
+		
+		if(lineupsPlayers.isEmpty()) throw new LineupPlayerNotFoundException("Has not been found LineupPlayers to this match");
 		
 		return lineupsPlayers;
 	}
@@ -90,100 +85,69 @@ public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 		
 		this.removeIfHasLineupsPlayers(lineupRecovered);
 		
+		List<LineupPlayer> lineupPlayersResponse = new ArrayList<>();
+		
 		lineupsPlayers.forEach(lineupPlayer -> {
 			
+			if(lineupPlayer == null) throw new AddingLineupPlayerException("LineupPlayer is not valid to save");
 			lineupPlayer.setLineup(lineupRecovered);
-			this.isLineupPlayerValidToSave(lineupPlayer);
-			this.playerBelongToClub(this.playersService.getPlayerById(lineupPlayer.getPlayer().getPlayerId()), clubRecovered, clubStatus);
-			this.lineupsPlayersDao.save(lineupPlayer);
+			Player player = lineupPlayerValidator.isLineupPlayerValidToSave(lineupPlayer);
+			this.playerBelongToClub(player, clubRecovered);
+			lineupPlayersResponse.add(this.lineupsPlayersDao.save(lineupPlayer));
 			
 		});
 		
-		return lineupsPlayers;
+		return lineupPlayersResponse;
 	}
 
 	//PUT
 
 	//En vez de actualizar creo que es mejor solo eliminar el LineupPlayer y crer uno nuevo
-	@Override
-	public LineupPlayer updateLineupPlayer(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException {
-		this.isLineupPlayerValidToUpdate(lineupPlayer);
-		return this.lineupsPlayersDao.save(lineupPlayer);
-	}
+//	@Override
+//	public LineupPlayer updateLineupPlayer(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException {
+//		this.isLineupPlayerValidToUpdate(lineupPlayer);
+//		return this.lineupsPlayersDao.save(lineupPlayer);
+//	}
 	
 	//DELETE
 
-	@Override
-	public LineupPlayer deleteLineupPlayer(Long id) throws InformationNotFoundException {
-		LineupPlayer lineupPlayerDeleted = this.lineupPlayerExists(id);
-		this.lineupsPlayersDao.deleteById(id);
-		return lineupPlayerDeleted;
-	}
+//	@Override
+//	public LineupPlayer deleteLineupPlayer(Long id) throws InformationNotFoundException {
+//		LineupPlayer lineupPlayerDeleted = this.lineupPlayerExists(id);
+//		this.lineupsPlayersDao.deleteById(id);
+//		return lineupPlayerDeleted;
+//	}
 	
-	//VALIDATIONS
-
 	@Override
-	public boolean isLineupPlayerValidToSave(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException {
-		
-		if(		lineupPlayer == null ||
-				lineupPlayer.getPlayerStatus() == null || lineupPlayer.getPlayerStatus().trim().equals("") ||
-				lineupPlayer.getPlayer() == null || lineupPlayer.getPlayer().getPlayerId() == null || lineupPlayer.getPlayer().getPlayerId() < 1 ||
-				lineupPlayer.getLineup() == null || lineupPlayer.getLineup().getLineupId() == null || lineupPlayer.getLineup().getLineupId() < 1
-				
-				) {
-			
-			throw new AddingLineupPlayerException("LineupPlayer is not valid to save");
-			
-		}
-		
-		this.playersService.getPlayerById(lineupPlayer.getPlayer().getPlayerId());
-		this.lineupsService.lineupExists(lineupPlayer.getLineup().getLineupId());
-		
-		return true;
-	}
-
-	@Override
-	public boolean isLineupPlayerValidToUpdate(LineupPlayer lineupPlayer) throws InformationNotFoundException, WritingInformationException {
-		
-		if(		lineupPlayer == null ||
-				lineupPlayer.getLineupPlayerId() == null || lineupPlayer.getLineupPlayerId() < 1 ||
-				lineupPlayer.getPlayerStatus() == null || lineupPlayer.getPlayerStatus().trim().equals("") ||
-				lineupPlayer.getPlayer() == null || lineupPlayer.getPlayer().getPlayerId() == null || lineupPlayer.getPlayer().getPlayerId() < 1 ||
-				lineupPlayer.getLineup() == null || lineupPlayer.getLineup().getLineupId() == null || lineupPlayer.getLineup().getLineupId() < 1
-				) {
-			
-			throw new AddingLineupPlayerException("LineupPlayer is not valid to save");
-			
-		}
-		
-		this.lineupPlayerExists(lineupPlayer.getLineupPlayerId());
-		this.playersService.getPlayerById(lineupPlayer.getPlayer().getPlayerId());
-		this.lineupsService.lineupExists(lineupPlayer.getLineup().getLineupId());
-		
-		return true;
-	}
-
-	@Override
-	public LineupPlayer lineupPlayerExists(Long id) throws InformationNotFoundException {
-		return this.lineupsPlayersDao.findById(id).orElseThrow(() -> {
-			StringBuilder sb = new StringBuilder().append("LineupPlayer with id ").append(id).append(" has not been found");
-			throw new LineupPlayerNotFoundException(sb.toString());
+	public List<LineupPlayer> deleteLineupsPlayers(List<Long> lineupPlayersIds) throws InformationNotFoundException{
+		//En caso de que uno no exista, los demás igualmente se deben de borrar
+		List<LineupPlayer> response = new ArrayList<>();
+		lineupPlayersIds.forEach(lpId -> {
+			try {
+				response.add(lineupPlayerValidator.lineupPlayerExists(lpId));
+				lineupsPlayersDao.deleteById(lpId);
+			}catch(InformationNotFoundException e) {
+				System.out.println(e.getMessage()); //Cambiarlo por un logger
+			}
 		});
+		return response;
 	}
 	
-	public boolean playerBelongToClub(Player player, Club club, String clubStatus) {
+	//UTILERY
+
+	private boolean playerBelongToClub(Player player, Club club) {
 		
 		if(player.getClub().getClubId() != club.getClubId()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Player with id ").append(player.getPlayerId()).append(" don't belong to ")
-			.append(clubStatus).append(" team");
+			sb.append("Player with id ").append(player.getPlayerId()).append(" doesn't belong to the")
+			.append(club.getName()).append(" club");
 			throw new AddingLineupPlayerException(sb.toString());
 		}
 		
 		return true;
 	}
 	
-	public Club getClub(String clubStatus, Match match) throws InformationNotFoundException, WritingInformationException{
+	private Club getClub(String clubStatus, Match match) throws InformationNotFoundException, WritingInformationException{
 
 		Club clubRecovered;
 		if(clubStatus.trim().equalsIgnoreCase("Local")) {
@@ -194,17 +158,12 @@ public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 			throw new WritingInformationException("ClubStatus is not valid");
 		}
 		
-		
 		return clubRecovered;
 	}
 	
-	public void removeIfHasLineupsPlayers(Lineup lineup) {
-		this.lineupsPlayersDao.findByLineup(lineup)
-				.ifPresent(lineupsPlayers -> {
-					
-					lineupsPlayers.forEach(lineupPlayer -> this.lineupsPlayersDao.deleteById(lineupPlayer.getLineupPlayerId()));
-					
-				});
+	private void removeIfHasLineupsPlayers(Lineup lineup) {
+		List<LineupPlayer> lineupsPlayers = lineupsPlayersDao.findByLineup(lineup);
+		lineupsPlayers.forEach(lineupPlayer -> this.lineupsPlayersDao.deleteById(lineupPlayer.getLineupPlayerId()));
 	}
 
 }

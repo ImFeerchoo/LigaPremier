@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fernandobetancourt.exceptions.AddingJourneyException;
 import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.JourneyNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.dao.IJourneysDao;
 import com.fernandobetancourt.model.entity.Journey;
+import com.fernandobetancourt.validators.JourneyValidator;
 
 @Service
 public class JourneysServiceImpl implements IJourneysService {
@@ -19,101 +19,44 @@ public class JourneysServiceImpl implements IJourneysService {
 	private IJourneysDao journeysDao;
 	
 	@Autowired
-	private IGroupsService groupsService;
-
+	private JourneyValidator journeyValidator;
+	
 	//GET
 	
 	@Override
 	public List<Journey> getAllJourneys() {
-		return this.journeysDao.findAll();
+		List<Journey> journeys = journeysDao.findAll();
+		if(journeys.isEmpty()) throw new JourneyNotFoundException("There are not journeys available");
+		return journeys;
 	}
-
+	
 	@Override
 	public Journey getJourney(Long id) throws InformationNotFoundException {
-		return this.journeyExists(id);
+		return journeyValidator.journeyExists(id);
 	}
 
 	//POST
 	
 	@Override
 	public Journey addJourney(Journey journey) throws InformationNotFoundException, WritingInformationException{
-		
-		if(!this.isJourneyValidToSave(journey)) {
-			throw new AddingJourneyException("Journey is not valid to save");
-		}
-		
+		journeyValidator.isJourneyValidToSave(journey);
 		return this.journeysDao.save(journey);
 	}
 	
 	//PUT
-
+		
 	@Override
 	public Journey updateJourney(Journey journey) throws InformationNotFoundException, WritingInformationException {
-		
-		if(!this.isJourneyValidToUpdate(journey)) {
-			throw new AddingJourneyException("Journey is not valid to save");
-		}
-		
-		this.journeyExists(journey.getJourneyId());
-		
+		journeyValidator.isJourneyValidToUpdate(journey);
 		return this.journeysDao.save(journey);
 	}
 	
 	//DELETE
-
-	@Override
-	public Journey deleteJourney(Long id) throws InformationNotFoundException {
-		
-		Journey journeyDeleted = this.journeyExists(id);
-		
-		this.journeysDao.deleteById(id);
-		
-		return journeyDeleted;
-	}
-
-	//VALIDATIONS
-	public boolean isJourneyValidToSave(Journey journey) throws InformationNotFoundException {
-		
-		if(		journey == null ||
-				journey.getNumber() == null || journey.getNumber() < 1 ||
-				journey.getGroup() == null || journey.getGroup().getGroupId() == null || journey.getGroup().getGroupId() < 1
-				) {
-
-			return false;
-			
-		}
-		
-		this.groupsService.getGroup(journey.getGroup().getGroupId());
-		
-		return true;
-	}
 	
-	public boolean isJourneyValidToUpdate(Journey journey) throws InformationNotFoundException {
-		
-		if(		journey == null ||
-				journey.getJourneyId() == null || journey.getJourneyId() < 1 ||
-				journey.getNumber() == null || journey.getNumber() < 1 ||
-				journey.getGroup() == null || journey.getGroup().getGroupId() == null || journey.getGroup().getGroupId() < 1
-				) {
-			
-			return false;
-			
-		}
-		
-		this.groupsService.getGroup(journey.getGroup().getGroupId());
-		
-		return true;
-		
-	}
-
 	@Override
-	public Journey journeyExists(Long id) throws InformationNotFoundException{
-		
-		Journey journey = this.journeysDao.findById(id).orElseThrow(() -> {
-			StringBuilder sb = new StringBuilder().append("Journey with id ").append(id).append(" has not been found");
-			throw new JourneyNotFoundException(sb.toString());
-		});
-		
-		return journey;
+	public Journey deleteJourney(Long id) throws InformationNotFoundException {		
+		Journey journeyDeleted = journeyValidator.journeyExists(id);
+		this.journeysDao.deleteById(id);
+		return journeyDeleted;
 	}
 }

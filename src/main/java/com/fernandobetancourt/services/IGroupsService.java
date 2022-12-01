@@ -21,9 +21,4 @@ public abstract interface IGroupsService {
 	
 	//DELETE
 	public abstract Group deleteGroupd(Long id) throws InformationNotFoundException;
-	
-	//VALIDATIONS
-	public abstract boolean isGroupValidToSave(Group group) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isGroupValidToUpdate(Group group) throws InformationNotFoundException, WritingInformationException;
-	public abstract Group groupExists(Long id) throws InformationNotFoundException;
 }

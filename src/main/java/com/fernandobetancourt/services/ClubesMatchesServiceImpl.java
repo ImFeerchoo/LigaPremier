@@ -32,6 +32,7 @@ public class ClubesMatchesServiceImpl implements IClubesMatchesService {
 	
 	@Override
 	public ClubMatch getClubMatchByMatch(Match match) throws InformationNotFoundException{
+		//05/11/2022 Mejor solo pedir el id del match y aquí en el método recuperarlo con el servicio
 		//Al momento en que pedimos es clubMatch por el Match ya estamos seguros de que el Match existe
 		return this.clubesMatchesDao.findByMatch(match).orElseThrow(() -> {
 			throw new ClubMatchNotFoundException("ClubMatch not found");

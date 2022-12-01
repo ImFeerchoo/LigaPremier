@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fernandobetancourt.exceptions.AddingPlayerException;
 import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.PlayerNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.dao.IPlayersDao;
 import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.Player;
+import com.fernandobetancourt.validators.PlayerValidator;
 
 @Service
 public class PlayersServiceImpl implements IPlayersService {
@@ -21,42 +21,56 @@ public class PlayersServiceImpl implements IPlayersService {
 
 	@Autowired
 	private IClubesService clubesService;
+	
+	@Autowired
+	private PlayerValidator playerValidator;
 
 	// GET
-
+	
 	@Override
 	public Player getPlayerById(Long id) throws InformationNotFoundException {
-
-		return this.playersDao.findById(id).orElseThrow(() -> {
-			throw new PlayerNotFoundException("Player with id " + id + " has not been found");
-		});
-
+		return playerValidator.playerExists(id);
 	}
 
 	@Override
 	public Player getPlayerByName(String names) throws InformationNotFoundException {
 		return this.playersDao.findByNames(names).orElseThrow(() -> {
-			throw new PlayerNotFoundException("Player " + names + " has not been found");
+			var sb = new StringBuilder();
+			sb.append("Player ").append(names).append(" has not been found");
+			throw new PlayerNotFoundException(sb.toString());
 		});
 	}
 
 	@Override
 	public List<Player> getAllPlayers() {
-		return this.playersDao.findAll();
+		List<Player> players = playersDao.findAll();
+		if(players.isEmpty()) throw new PlayerNotFoundException("There are not players available");
+		return players;
 	}
-
+	
+//	@Override
+//	public List<Player> getPlayersByClub(Long clubId) throws InformationNotFoundException {
+//		Club club = clubesService.getClubById(clubId);
+//		return playersDao.findByClub(club);
+//	}
+	
 	@Override
-	public List<Player> getPlayersByClub(Club club) throws InformationNotFoundException {
-		return this.playersDao.findByClub(club).orElseThrow(() -> {
-			throw new PlayerNotFoundException("Los jugadores del club " + club.getName() + " no fueron encontrados");
-		});
+	public List<Player> getPlayersByClub(Long clubId) throws InformationNotFoundException {
+		Club club = clubesService.getClubById(clubId);
+		List<Player> players = playersDao.findByClub(club);
+		if(players.isEmpty()) {
+			var sb = new StringBuilder();
+			sb.append("Players of club ").append(club.getName()).append(" has not been found");
+			throw new PlayerNotFoundException(sb.toString());
+		}
+		return players;
 	}
 
 	// POST
 
 	@Override
 	public Player addPlayer(Player player) throws InformationNotFoundException, WritingInformationException {
-		this.isPlayerValidToSave(player);
+		playerValidator.isPlayerValidToSave(player);
 		return this.playersDao.save(player);
 	}
 
@@ -64,7 +78,7 @@ public class PlayersServiceImpl implements IPlayersService {
 
 	@Override
 	public Player updatePlayer(Player player) throws InformationNotFoundException, WritingInformationException {
-		this.isPlayerValidToUpdate(player);
+		playerValidator.isPlayerValidToUpdate(player);
 		return this.playersDao.save(player);
 	}
 
@@ -72,71 +86,9 @@ public class PlayersServiceImpl implements IPlayersService {
 
 	@Override
 	public Player deletePlayer(Long id) throws InformationNotFoundException {
-		Player playerDeleted = this.playerExists(id);
+		Player playerDeleted = playerValidator.playerExists(id);
 		this.playersDao.deleteById(id);
 		return playerDeleted;
-	}
-
-	// VALIDATIONS
-
-	public boolean isPlayerValidToSave(Player player) throws InformationNotFoundException, WritingInformationException {
-
-		// Poner validacion de que el club tiene un id valido, > 1 y diferente de null
-		if (	player == null || 
-				player.getNames() == null || player.getNames().trim().equals("") || 
-				player.getLastNames() == null || player.getLastNames().trim().equals("") || 
-				player.getNumber() == null || player.getNumber() < 1 || 
-				player.getPosition() == null || player.getPosition().trim().equals("") || 
-				player.getAge() == null || player.getAge() < 1 ||
-				player.getWeight() == null || player.getWeight() < 1 ||
-				player.getHeight() == null || player.getHeight() < 1 ||
-				player.getNationality() == null || player.getNationality().trim().equals("") ||
-				player.getClub() == null || player.getClub().getClubId() == null || player.getClub().getClubId() < 1
-				) {
-			  
-			throw new AddingPlayerException("Player is not valid to save");
-
-		}
-
-		// Verificacion de que el club existe
-		this.clubesService.getClubById(player.getClub().getClubId());
-		return true;
-	}
-
-	@Override
-	public boolean isPlayerValidToUpdate(Player player) throws InformationNotFoundException, WritingInformationException {
-		// Poner validacion de que el club tiene un id valido, > 1 y diferente de null
-		if (	player == null || 
-				player.getPlayerId() == null || player.getPlayerId() < 1 || 
-				player.getNames() == null || player.getNames().trim().equals("") || 
-				player.getLastNames() == null || player.getLastNames().trim().equals("") || 
-				player.getNumber() == null || player.getNumber() < 1 || 
-				player.getPosition() == null || player.getPosition().trim().equals("") || 
-				player.getAge() == null || player.getAge() < 1 ||
-				player.getWeight() == null || player.getWeight() < 1 ||
-				player.getHeight() == null || player.getHeight() < 1 ||
-				player.getNationality() == null || player.getNationality().trim().equals("") ||
-				player.getClub() == null || player.getClub().getClubId() == null || player.getClub().getClubId() < 1
-				) {
-			  
-
-			throw new AddingPlayerException("Player is not valid to save");
-
-		}
-
-		// Verificacion de que el club existe
-		this.playerExists(player.getPlayerId());
-		this.clubesService.getClubById(player.getClub().getClubId());
-		
-		return true;
-	}
-
-	@Override
-	public Player playerExists(Long id) throws InformationNotFoundException{
-		return this.playersDao.findById(id).orElseThrow(() -> {
-			StringBuilder sb = new StringBuilder().append("Player with id ").append(id).append(" has not been found");
-			throw new PlayerNotFoundException(sb.toString());
-		});
 	}
 
 }

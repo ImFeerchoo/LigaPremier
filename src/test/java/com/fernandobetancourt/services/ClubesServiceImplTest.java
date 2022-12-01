@@ -19,6 +19,7 @@ import com.fernandobetancourt.exceptions.ClubNotFoundException;
 import com.fernandobetancourt.exceptions.GroupNotFoundException;
 import com.fernandobetancourt.model.dao.IClubesDao;
 import com.fernandobetancourt.model.entity.Club;
+import com.fernandobetancourt.model.entity.Group;
 
 @SpringBootTest
 class ClubesServiceImplTest {
@@ -51,20 +52,34 @@ class ClubesServiceImplTest {
 
 	}
 
+//	@Test
+//	void testGetClubesEmptyList() {
+//		// Given
+//		when(clubesDao.findAll()).thenReturn(Collections.emptyList());
+//
+//		// When
+//		List<Club> clubes = clubesService.getClubes();
+//
+//		// Then
+//		assertTrue(clubes.isEmpty());
+//		assertEquals(0, clubes.size());
+//
+//		verify(clubesDao).findAll();
+//
+//	}
+	
 	@Test
 	void testGetClubesEmptyList() {
 		// Given
 		when(clubesDao.findAll()).thenReturn(Collections.emptyList());
-
-		// When
-		List<Club> clubes = clubesService.getClubes();
-
+		
 		// Then
-		assertTrue(clubes.isEmpty());
-		assertEquals(0, clubes.size());
-
+		assertThrows(ClubNotFoundException.class, () -> {
+			// When
+			clubesService.getClubes();
+		});
+		
 		verify(clubesDao).findAll();
-
 	}
 
 	@Test
@@ -100,6 +115,22 @@ class ClubesServiceImplTest {
 		verify(groupsService).getGroup(1L);
 
 	}
+	
+	@Test
+	void testGetClubesByGroupEmptyList() {
+		// Given
+		when(groupsService.getGroup(anyLong())).thenReturn(getGroupByIdBreakingReference(1L));
+		when(clubesDao.findByGroup(any(Group.class))).thenReturn(Collections.emptyList());
+		
+		// Then
+		assertThrows(ClubNotFoundException.class, () -> {
+			// When
+			clubesService.getClubesByGroup(1L);
+		});
+		
+		verify(groupsService).getGroup(1L);
+		verify(clubesDao).findByGroup(any(Group.class));
+	}
 
 	@Test
 	void testGetClubByIdSuccessed() {
@@ -125,10 +156,8 @@ class ClubesServiceImplTest {
 
 		// Then
 		assertThrows(ClubNotFoundException.class, () -> {
-
 			// When
 			clubesService.getClubById(1L);
-
 		});
 
 		verify(clubesDao).findById(1L);
@@ -148,7 +177,7 @@ class ClubesServiceImplTest {
 		});
 
 		// When
-		Club club = clubesService.addClub(getClubWithoutIdByPositionbreakingReference(0));
+		Club club = clubesService.addClub(getClubWithoutIdByPositionBreakingReference(0));
 
 		// Then
 		assertEquals(1L, club.getClubId());
@@ -156,7 +185,7 @@ class ClubesServiceImplTest {
 		assertEquals("Estadio Azteca", club.getStadium());
 		assertEquals("crz", club.getPhoto());
 
-		verify(groupsService).groupExists(anyLong());
+		verify(groupsService).getGroup(anyLong());
 		verify(clubesDao).save(any(Club.class));
 
 	}
@@ -176,7 +205,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedNameNull() {
 		// Given
-		Club clubNameNull = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubNameNull = getClubWithoutIdByPositionBreakingReference(0);
 		clubNameNull.setName(null);
 
 		// Then
@@ -189,7 +218,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedNameEmptyString() {
 		// Given
-		Club clubNameEmptyString = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubNameEmptyString = getClubWithoutIdByPositionBreakingReference(0);
 		clubNameEmptyString.setName("");
 
 		// Then
@@ -202,7 +231,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedStadiumNull() {
 		// Given
-		Club clubStadiumNull = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubStadiumNull = getClubWithoutIdByPositionBreakingReference(0);
 		clubStadiumNull.setStadium(null);
 
 		// Then
@@ -215,7 +244,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedStadiumEmptyString() {
 		// Given
-		Club clubStadiumEmptyString = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubStadiumEmptyString = getClubWithoutIdByPositionBreakingReference(0);
 		clubStadiumEmptyString.setStadium("");
 
 		// Then
@@ -228,7 +257,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedGroupNull() {
 		// Given
-		Club clubGroupNull = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubGroupNull = getClubWithoutIdByPositionBreakingReference(0);
 		clubGroupNull.setGroup(null);
 
 		// Then
@@ -241,7 +270,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedGroupIdNull() {
 		// Given
-		Club clubGroupIdNull = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubGroupIdNull = getClubWithoutIdByPositionBreakingReference(0);
 		clubGroupIdNull.setGroup(GROUPS_WITHOUT_ID.get(0));
 
 		// Then
@@ -254,7 +283,7 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedGroupIdLessThan1() {
 		// Given
-		Club clubGroupIdLessThan1 = getClubWithoutIdByPositionbreakingReference(0);
+		Club clubGroupIdLessThan1 = getClubWithoutIdByPositionBreakingReference(0);
 		clubGroupIdLessThan1.setGroup(GROUP_WITH_ID_LESS_THAN_1);
 
 		// Then
@@ -267,15 +296,17 @@ class ClubesServiceImplTest {
 	@Test
 	void testAddClubFailedGroupDoesNotExists() {
 		// Given
-		when(groupsService.groupExists(anyLong())).thenThrow(GroupNotFoundException.class);
+//		when(groupsService.groupExists(anyLong())).thenThrow(GroupNotFoundException.class);
+		when(groupsService.getGroup(anyLong())).thenThrow(GroupNotFoundException.class);
 
 		// Then
 		assertThrows(GroupNotFoundException.class, () -> {
 			// When
-			clubesService.addClub(getClubWithoutIdByPositionbreakingReference(0));
+			clubesService.addClub(getClubWithoutIdByPositionBreakingReference(0));
 		});
 
-		verify(groupsService).groupExists(anyLong());
+//		verify(groupsService).groupExists(anyLong());
+		verify(groupsService).getGroup(anyLong());
 	}
 	
 	//PUT	
@@ -436,7 +467,8 @@ class ClubesServiceImplTest {
 	void testUpdateClubFailedGroupsDoesNotExists() {
 		// Given
 		when(clubesDao.findById(anyLong())).thenReturn(Optional.of(getClubByIdBreakingReference(1L)));
-		when(groupsService.groupExists(anyLong())).thenThrow(GroupNotFoundException.class);
+//		when(groupsService.groupExists(anyLong())).thenThrow(GroupNotFoundException.class);
+		when(groupsService.getGroup(anyLong())).thenThrow(GroupNotFoundException.class);
 
 		// Then
 		assertThrows(GroupNotFoundException.class, () -> {
@@ -444,7 +476,8 @@ class ClubesServiceImplTest {
 			clubesService.updateClub(getClubByIdBreakingReference(1L));
 		});
 
-		verify(groupsService).groupExists(anyLong());
+//		verify(groupsService).groupExists(anyLong());
+		verify(groupsService).getGroup(anyLong());
 	}
 	
 	@Test
