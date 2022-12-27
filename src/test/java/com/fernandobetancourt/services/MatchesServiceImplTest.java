@@ -27,8 +27,9 @@ import com.fernandobetancourt.model.entity.ClubMatch;
 import com.fernandobetancourt.model.entity.ClubScoreboard;
 import com.fernandobetancourt.model.entity.LineupMatch;
 import com.fernandobetancourt.model.entity.Match;
+import com.fernandobetancourt.validators.MatchValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {MatchesServiceImpl.class, MatchValidator.class})
 class MatchesServiceImplTest {
 
 	@MockBean

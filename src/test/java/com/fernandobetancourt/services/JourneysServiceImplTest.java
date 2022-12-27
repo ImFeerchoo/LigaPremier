@@ -17,9 +17,11 @@ import com.fernandobetancourt.exceptions.AddingJourneyException;
 import com.fernandobetancourt.exceptions.GroupNotFoundException;
 import com.fernandobetancourt.exceptions.JourneyNotFoundException;
 import com.fernandobetancourt.model.dao.IJourneysDao;
+import com.fernandobetancourt.model.entity.Group;
 import com.fernandobetancourt.model.entity.Journey;
+import com.fernandobetancourt.validators.JourneyValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {JourneysServiceImpl.class, JourneyValidator.class})
 class JourneysServiceImplTest {
 
 	@MockBean
@@ -102,6 +104,55 @@ class JourneysServiceImplTest {
 		});
 
 		verify(journeysDao).findById(1L);
+	}
+	
+	@Test
+	void testGetJourneysByGroupSuccessed() {
+		//Given
+		when(groupsService.getGroup(anyLong())).then(invocation -> getGroupByIdBreakingReference(invocation.getArgument(0)));
+		when(journeysDao.findByGroup(any(Group.class))).then(invocation -> {
+			Group group = invocation.getArgument(0);
+			return getJourneysByGroup(group.getGroupId());
+		});
+		
+		//When
+		List<Journey> journeys = journeysService.getJourneysByGroup(1L);
+		
+		//Then
+		assertEquals(getJourneysByGroup(1L), journeys);
+		verify(groupsService).getGroup(1L);
+		verify(journeysDao).findByGroup(any(Group.class));
+	}
+	
+	@Test
+	void testGetJourneysByGroupFailedGroupDoesNotExists() {
+		//Given
+		when(groupsService.getGroup(anyLong())).thenThrow(GroupNotFoundException.class);
+		
+		//Then
+		assertThrows(GroupNotFoundException.class, () -> {
+			//When
+			journeysService.getJourneysByGroup(1L);
+		});
+		
+		verify(groupsService).getGroup(1L);
+		verify(journeysDao, never()).findByGroup(any(Group.class));
+	}
+	
+	@Test
+	void testGetJourneysByGroupFailedEmptyList() {
+		//Given
+		when(groupsService.getGroup(anyLong())).then(invocation -> getGroupByIdBreakingReference(invocation.getArgument(0)));
+		when(journeysDao.findByGroup(any(Group.class))).thenReturn(Collections.emptyList());
+		
+		//Then
+		assertThrows(JourneyNotFoundException.class, () -> {
+			//When
+			journeysService.getJourneysByGroup(1L);
+		});
+		
+		verify(groupsService).getGroup(1L);
+		verify(journeysDao).findByGroup(any(Group.class));
 	}
 
 	// POST

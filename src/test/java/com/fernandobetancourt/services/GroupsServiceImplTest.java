@@ -19,8 +19,9 @@ import com.fernandobetancourt.exceptions.SerieNotFoundException;
 import com.fernandobetancourt.model.dao.IGroupsDao;
 import com.fernandobetancourt.model.entity.Group;
 import com.fernandobetancourt.model.entity.Serie;
+import com.fernandobetancourt.validators.GroupValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {GroupsServiceImpl.class, GroupValidator.class})
 class GroupsServiceImplTest {
 
 	@MockBean

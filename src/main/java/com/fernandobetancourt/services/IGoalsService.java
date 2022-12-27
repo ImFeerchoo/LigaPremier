@@ -15,14 +15,14 @@ public interface IGoalsService {
 	public abstract Goal addGoal(Goal goal, Long matchId) throws InformationNotFoundException, WritingInformationException;
 	
 	//PUT
-	public abstract Goal updateGoal(Goal goal, Long matchId) throws InformationNotFoundException, WritingInformationException;
+//	public abstract Goal updateGoal(Goal goal, Long matchId) throws InformationNotFoundException, WritingInformationException;
 	
 	//DELETE
 	public abstract Goal deleteGoal(Long id) throws InformationNotFoundException;
 	
 	//VALIDATIONS
-	public abstract boolean isGoalValidToSave(Goal goal) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isGoalValidToUpdate(Goal goal) throws InformationNotFoundException, WritingInformationException;
-	public abstract Goal goalExists(Long id) throws InformationNotFoundException;
+//	public abstract boolean isGoalValidToSave(Goal goal) throws InformationNotFoundException, WritingInformationException;
+//	public abstract boolean isGoalValidToUpdate(Goal goal) throws InformationNotFoundException, WritingInformationException;
+//	public abstract Goal goalExists(Long id) throws InformationNotFoundException;
 	
 }

@@ -61,22 +61,22 @@ public class GoalsRestController {
 		}
 	}
 	
-	@PutMapping("/goals/{matchId}")
-	public ResponseEntity<?> updateGoal(@RequestBody Goal goal, @PathVariable("matchId") Long matchId){
-		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Goal goalUpdated = this.goalsService.updateGoal(goal, matchId);
-			response.put("goal", goalUpdated);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch (InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		} catch (WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@PutMapping("/goals/{matchId}")
+//	public ResponseEntity<?> updateGoal(@RequestBody Goal goal, @PathVariable("matchId") Long matchId){
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			Goal goalUpdated = this.goalsService.updateGoal(goal, matchId);
+//			response.put("goal", goalUpdated);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		} catch (InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		} catch (WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 	
 	@DeleteMapping("/goals/{goalId}")
 	public ResponseEntity<?> deleteGoal(@PathVariable("goalId") Long goalId){

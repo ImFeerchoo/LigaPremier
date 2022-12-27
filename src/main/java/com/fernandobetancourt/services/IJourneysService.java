@@ -9,8 +9,9 @@ import com.fernandobetancourt.model.entity.Journey;
 public interface IJourneysService {
 
 	//GET
-	public abstract List<Journey> getAllJourneys();
+	public abstract List<Journey> getAllJourneys() throws InformationNotFoundException;
 	public abstract Journey getJourney(Long id) throws InformationNotFoundException;
+	public abstract List<Journey> getJourneysByGroup(Long groupId) throws InformationNotFoundException;
 	
 	//POST
 	public abstract Journey addJourney(Journey journey) throws InformationNotFoundException, WritingInformationException;

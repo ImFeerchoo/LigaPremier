@@ -9,6 +9,7 @@ import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.JourneyNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.dao.IJourneysDao;
+import com.fernandobetancourt.model.entity.Group;
 import com.fernandobetancourt.model.entity.Journey;
 import com.fernandobetancourt.validators.JourneyValidator;
 
@@ -17,6 +18,9 @@ public class JourneysServiceImpl implements IJourneysService {
 	
 	@Autowired
 	private IJourneysDao journeysDao;
+	
+	@Autowired
+	private IGroupsService groupsService;
 	
 	@Autowired
 	private JourneyValidator journeyValidator;
@@ -33,6 +37,14 @@ public class JourneysServiceImpl implements IJourneysService {
 	@Override
 	public Journey getJourney(Long id) throws InformationNotFoundException {
 		return journeyValidator.journeyExists(id);
+	}
+	
+	@Override
+	public List<Journey> getJourneysByGroup(Long groupId) throws InformationNotFoundException {
+		Group group = groupsService.getGroup(groupId);
+		List<Journey> journeys = journeysDao.findByGroup(group);
+		if(journeys.isEmpty()) throw new JourneyNotFoundException("There are not journeys available to this group");
+		return journeys;
 	}
 
 	//POST

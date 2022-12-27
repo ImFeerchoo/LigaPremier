@@ -14,8 +14,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fernandobetancourt.exceptions.LineupNotFoundException;
 import com.fernandobetancourt.model.dao.ILineupsDao;
 import com.fernandobetancourt.model.entity.Lineup;
+import com.fernandobetancourt.validators.LineupValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {LineupsServiceImpl.class, LineupValidator.class})
 class LineupsServiceImplTest {
 	
 	@MockBean

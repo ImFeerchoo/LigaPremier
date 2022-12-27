@@ -20,8 +20,9 @@ import com.fernandobetancourt.exceptions.GroupNotFoundException;
 import com.fernandobetancourt.model.dao.IClubesDao;
 import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.Group;
+import com.fernandobetancourt.validators.ClubValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {ClubesServiceImpl.class, ClubValidator.class})
 class ClubesServiceImplTest {
 
 	@MockBean

@@ -43,39 +43,41 @@ public class CardsRestController {
 		}
 	}
 	
-	@PostMapping("/cards")
-	public ResponseEntity<?> addCard(@RequestBody Card card){
-		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Card cardSaved = this.cardsService.addCard(card);
-			response.put("card", cardSaved);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch (InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		} catch (WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+	//Se cambió la implementación ser servicio, el match ya no esta dentro del Card, se pasa el id por separado
 	
-	@PutMapping("/cards")
-	public ResponseEntity<?> updateCard(@RequestBody Card card){
-		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Card cardUpdated = this.cardsService.updateCard(card);
-			response.put("card", cardUpdated);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch (InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		} catch (WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@PostMapping("/cards")
+//	public ResponseEntity<?> addCard(@RequestBody Card card){
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			Card cardSaved = this.cardsService.addCard(card);
+//			response.put("card", cardSaved);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		} catch (InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		} catch (WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//	
+//	@PutMapping("/cards")
+//	public ResponseEntity<?> updateCard(@RequestBody Card card){
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			Card cardUpdated = this.cardsService.updateCard(card);
+//			response.put("card", cardUpdated);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		} catch (InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		} catch (WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 	
 	@DeleteMapping("/cards/{cardId}")
 	public ResponseEntity<?> deleteCard(@PathVariable("cardId") Long cardId){

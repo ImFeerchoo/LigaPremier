@@ -29,8 +29,9 @@ import com.fernandobetancourt.model.dao.ILineupsPlayersDao;
 import com.fernandobetancourt.model.entity.Lineup;
 import com.fernandobetancourt.model.entity.LineupPlayer;
 import com.fernandobetancourt.model.entity.Match;
+import com.fernandobetancourt.validators.LineupPlayerValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {LineupsPlayersServiceImpl.class, LineupPlayerValidator.class})
 class LineupsPlayersServiceImplTest {
 
 	@MockBean
@@ -91,7 +92,7 @@ class LineupsPlayersServiceImplTest {
 				.then(invocation -> getMatchByIdBreakingReference(invocation.getArgument(0)));
 
 		when(lineupsMatchesService.getLineupMatchesByMatch(any(Match.class)))
-				.thenReturn(Arrays.asList(getLineupMatchLocal(), getLineupMatchVisitor()));
+				.thenReturn(LINEUPMATCHES);
 
 		when(lineupsPlayersDao.findByLineup(getLineupWithId())).thenReturn(LINEUP_PLAYERS_WITH_ID_CLUB_1);
 		when(lineupsPlayersDao.findByLineup(getLineupWithId2())).thenReturn(LINEUP_PLAYERS_WITH_ID_CLUB_2);
@@ -540,6 +541,7 @@ class LineupsPlayersServiceImplTest {
 	//En el método siempre se le establece el Lineup cuando se esta iterando, por lo que nunca se lanzaría ningún error sobre el Lineup
 	//Igual voy a probar regresando un Lineup que sea < 1, null, etc 
 	
+	//Creo que esta implementación la deje exactamente igual (Player with id less than 1)
 	@Test
 	void testAddLineupsPlayersFailedLineupNull() {
 		//Match -   Local (clubId: 1) - Visitor (clubId: 2)

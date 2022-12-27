@@ -19,13 +19,4 @@ public interface ILineupsCoachingStaffsService {
 	// DELETE
 	public abstract LineupCoachingStaff deleteLineupCoachingStaff(Long id) throws InformationNotFoundException;
 
-	// VALIDATIONS
-	public abstract boolean isLineupCoachingStaffValidToSave(LineupCoachingStaff lineupCoachingStaff)
-			throws InformationNotFoundException, WritingInformationException;
-
-	public abstract boolean isLineupCoachingStaffValidToUpdate(LineupCoachingStaff lineupCoachingStaff)
-			throws InformationNotFoundException, WritingInformationException;
-
-	public abstract LineupCoachingStaff lineupCoachingStaffExists(Long id) throws InformationNotFoundException;
-
 }

@@ -18,8 +18,9 @@ import com.fernandobetancourt.exceptions.AddingSerieException;
 import com.fernandobetancourt.exceptions.SerieNotFoundException;
 import com.fernandobetancourt.model.dao.ISeriesDao;
 import com.fernandobetancourt.model.entity.Serie;
+import com.fernandobetancourt.validators.SerieValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {SeriesServiceImpl.class, SerieValidator.class})
 class SeriesServiceImplTest {
 
 	@MockBean

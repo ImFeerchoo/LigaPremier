@@ -25,6 +25,8 @@ public class JourneyExceptionHandlerConfig {
 	public ResponseEntity<?> journeyNotFoundException(JourneyNotFoundException ex){
 		Map<String, Object> response = new HashMap<>();
 		response.put("error", ex.getMessage());
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%Se esta ejecutando el Exception Handler%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println(response);
 		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
 	}
 

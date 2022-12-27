@@ -92,7 +92,7 @@ public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 			if(lineupPlayer == null) throw new AddingLineupPlayerException("LineupPlayer is not valid to save");
 			lineupPlayer.setLineup(lineupRecovered);
 			Player player = lineupPlayerValidator.isLineupPlayerValidToSave(lineupPlayer);
-			this.playerBelongToClub(player, clubRecovered);
+			lineupPlayerValidator.playerBelongToClub(player, clubRecovered);
 			lineupPlayersResponse.add(this.lineupsPlayersDao.save(lineupPlayer));
 			
 		});
@@ -134,20 +134,10 @@ public class LineupsPlayersServiceImpl implements ILineupsPlayersService {
 	}
 	
 	//UTILERY
-
-	private boolean playerBelongToClub(Player player, Club club) {
-		
-		if(player.getClub().getClubId() != club.getClubId()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Player with id ").append(player.getPlayerId()).append(" doesn't belong to the")
-			.append(club.getName()).append(" club");
-			throw new AddingLineupPlayerException(sb.toString());
-		}
-		
-		return true;
-	}
 	
 	private Club getClub(String clubStatus, Match match) throws InformationNotFoundException, WritingInformationException{
+		
+		if(clubStatus == null) throw new WritingInformationException("ClubStatus is not valid");
 
 		Club clubRecovered;
 		if(clubStatus.trim().equalsIgnoreCase("Local")) {

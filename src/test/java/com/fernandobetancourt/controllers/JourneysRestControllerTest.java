@@ -1,7 +1,6 @@
 package com.fernandobetancourt.controllers;
 
 import static com.fernandobetancourt.Data.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -80,7 +79,7 @@ class JourneysRestControllerTest {
 		Map<String, Object> response = Map.ofEntries(Map.entry("journey", getJourneyByIdBreakingReference(1L)));
 		
 		//When
-		mockMvc.perform(get("/api/journeys/1"))
+		mockMvc.perform(get("/api/journey/1"))
 			//Then
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -98,7 +97,7 @@ class JourneysRestControllerTest {
 		});
 		
 		//When
-		mockMvc.perform(get("/api/journeys/1"))
+		mockMvc.perform(get("/api/journey/1"))
 			//Then
 			.andExpect(status().isNoContent())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))

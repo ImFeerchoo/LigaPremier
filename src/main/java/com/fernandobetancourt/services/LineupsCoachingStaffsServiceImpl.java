@@ -18,18 +18,13 @@ import com.fernandobetancourt.model.entity.Lineup;
 import com.fernandobetancourt.model.entity.LineupCoachingStaff;
 import com.fernandobetancourt.model.entity.LineupMatch;
 import com.fernandobetancourt.model.entity.Match;
+import com.fernandobetancourt.validators.LineupCoachingStaffValidator;
 
 @Service
 public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsService {
 
 	@Autowired
 	private ILineupsCoachingStaffsDao lineupsCoachingStaffsDao;
-
-	@Autowired
-	private ILineupsService lineupsService;
-
-	@Autowired
-	private ICoachingStaffsService coachingStaffsService;
 
 	@Autowired
 	private IMatchesService matchesService;
@@ -39,39 +34,39 @@ public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsS
 
 	@Autowired
 	private ILineupsMatchesService lineupsMatchesService;
+	
+	@Autowired
+	private LineupCoachingStaffValidator lineupCoachingStaffValidator;
 
 	// GET
 
 	@Override
 	public LineupCoachingStaff getLineupCoachingStaff(Long id) throws InformationNotFoundException {
-		return this.lineupCoachingStaffExists(id);
+		return lineupCoachingStaffValidator.lineupCoachingStaffExists(id);
 	}
-
+	
 	@Override
 	public List<LineupCoachingStaff> getLineupCoachingStaffByMatch(Long matchId) throws InformationNotFoundException {
-
+		
 		Match matchRecovered = this.matchesService.getMatch(matchId);
 		List<LineupMatch> lineupsMatches = this.lineupsMatchesService.getLineupMatchesByMatch(matchRecovered);
-
-		List<LineupCoachingStaff> lineupsCoachingStaffs = new ArrayList<>();
+		
+		List<LineupCoachingStaff> lineupsCoachingStaffsReturned = new ArrayList<>();
 		
 		lineupsMatches.forEach(lineupMatch -> {
-			
-			lineupsCoachingStaffs.addAll(this.lineupsCoachingStaffsDao.findByLineup(lineupMatch.getLineup()).orElseThrow(() -> {
-				throw new LineupCoachingStaffNotFoundException("LineupsCoachingStaffs not found");
-			}));
+			lineupsCoachingStaffsReturned.addAll(lineupsCoachingStaffsDao.findByLineup(lineupMatch.getLineup()));
 			
 		});
 		
-		return lineupsCoachingStaffs;
-
+		if(lineupsCoachingStaffsReturned.isEmpty()) throw new LineupCoachingStaffNotFoundException("LineupsCoachingStaffs not found"); 
+		return lineupsCoachingStaffsReturned;
+		
 	}
 
 	// POST
 
 	@Override
-	public List<LineupCoachingStaff> addLineupsCoachingStaffs(List<LineupCoachingStaff> lineupsCoachingStaffs,
-			Long matchId, String clubStatus) throws InformationNotFoundException, WritingInformationException {
+	public List<LineupCoachingStaff> addLineupsCoachingStaffs(List<LineupCoachingStaff> lineupsCoachingStaffs, Long matchId, String clubStatus) throws InformationNotFoundException, WritingInformationException {
 
 		Match matchRecovered = this.matchesService.getMatch(matchId);
 
@@ -86,11 +81,11 @@ public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsS
 		this.removeIfHasLineupsCoachingStaffs(lineupRecovered);
 
 		lineupsCoachingStaffs.forEach(lineupCoachingStaff -> {
-
+			if(lineupCoachingStaff == null) throw new AddingLineupCoachingStaffException("LineupCoachingStaff is not valid to save");
+			
 			lineupCoachingStaff.setLineup(lineupRecovered);
-			this.isLineupCoachingStaffValidToSave(lineupCoachingStaff);
-			this.playerBelongToClub(this.coachingStaffsService.getCoachingStaff(
-					lineupCoachingStaff.getCoachingStaff().getCoachingStaffId()), clubRecovered, clubStatus);
+			CoachingStaff coachingStaff = lineupCoachingStaffValidator.isLineupCoachingStaffValidToSave(lineupCoachingStaff);
+			lineupCoachingStaffValidator.coachingStaffBelongToClub(coachingStaff, clubRecovered, clubStatus);
 			this.lineupsCoachingStaffsDao.save(lineupCoachingStaff);
 
 		});
@@ -102,87 +97,17 @@ public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsS
 
 	@Override
 	public LineupCoachingStaff deleteLineupCoachingStaff(Long id) throws InformationNotFoundException {
-		LineupCoachingStaff lineupCoachingStaffDeleted = this.lineupCoachingStaffExists(id);
+		LineupCoachingStaff lineupCoachingStaffDeleted = lineupCoachingStaffValidator.lineupCoachingStaffExists(id);
 		this.lineupsCoachingStaffsDao.deleteById(id);
 		return lineupCoachingStaffDeleted;
 	}
+	
+	//UTILERY
 
-	// VALIDATIONS
-
-	@Override
-	public boolean isLineupCoachingStaffValidToSave(LineupCoachingStaff lineupCoachingStaff)
+	private Club getClub(String clubStatus, Match match)
 			throws InformationNotFoundException, WritingInformationException {
-
-		if (lineupCoachingStaff == null || lineupCoachingStaff.getCoachingStaff() == null
-				|| lineupCoachingStaff.getCoachingStaff().getCoachingStaffId() == null
-				|| lineupCoachingStaff.getCoachingStaff().getCoachingStaffId() < 1
-				|| lineupCoachingStaff.getLineup() == null || lineupCoachingStaff.getLineup().getLineupId() == null
-				|| lineupCoachingStaff.getLineup().getLineupId() < 1) {
-
-			throw new AddingLineupCoachingStaffException("LineupCoachingStaff is not valid to save");
-
-		}
-
-		//coachingStaffExists se remplaza con getCoachingStaff
-//		this.coachingStaffsService.coachingStaffExists(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
-		this.coachingStaffsService.getCoachingStaff(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
-		//lineupExists se remplaza con getLineup
-//		this.lineupsService.lineupExists(lineupCoachingStaff.getLineup().getLineupId());
-		this.lineupsService.getLineup(lineupCoachingStaff.getLineup().getLineupId());
-
-		return true;
-	}
-
-	@Override
-	public boolean isLineupCoachingStaffValidToUpdate(LineupCoachingStaff lineupCoachingStaff)
-			throws InformationNotFoundException, WritingInformationException {
-
-		if (lineupCoachingStaff == null || lineupCoachingStaff.getLineupCoachingStaffId() == null
-				|| lineupCoachingStaff.getLineupCoachingStaffId() < 1 || lineupCoachingStaff.getCoachingStaff() == null
-				|| lineupCoachingStaff.getCoachingStaff().getCoachingStaffId() == null
-				|| lineupCoachingStaff.getCoachingStaff().getCoachingStaffId() < 1
-				|| lineupCoachingStaff.getLineup() == null || lineupCoachingStaff.getLineup().getLineupId() == null
-				|| lineupCoachingStaff.getLineup().getLineupId() < 1) {
-
-			throw new AddingLineupCoachingStaffException("LineupCoachingStaff is not valid to save");
-
-		}
-
-		this.lineupCoachingStaffExists(lineupCoachingStaff.getLineupCoachingStaffId());
-		//coachingStaffExists se remplazó con getCoachingStaff
-//		this.coachingStaffsService.coachingStaffExists(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
-		this.coachingStaffsService.getCoachingStaff(lineupCoachingStaff.getCoachingStaff().getCoachingStaffId());
-		//lineupExists se remplaza con getLineup
-//		this.lineupsService.lineupExists(lineupCoachingStaff.getLineup().getLineupId());
-		this.lineupsService.getLineup(lineupCoachingStaff.getLineup().getLineupId());
-
-		return true;
-	}
-
-	@Override
-	public LineupCoachingStaff lineupCoachingStaffExists(Long id) throws InformationNotFoundException {
-		return this.lineupsCoachingStaffsDao.findById(id).orElseThrow(() -> {
-			StringBuilder sb = new StringBuilder();
-			sb.append("LineupCoachingStaff with id ").append(id).append(" has not been found");
-			throw new LineupCoachingStaffNotFoundException(sb.toString());
-		});
-	}
-
-	public boolean playerBelongToClub(CoachingStaff coachingStaff, Club club, String clubStatus)
-			throws WritingInformationException {
-
-		if (coachingStaff.getClub().getClubId() != club.getClubId()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("CoachingStaff with id ").append(coachingStaff.getCoachingStaffId()).append(" don't belong to ")
-					.append(clubStatus).append(" team");
-			throw new AddingLineupCoachingStaffException(sb.toString());
-		}
-
-		return true;
-	}
-
-	public Club getClub(String clubStatus, Match match)
-			throws InformationNotFoundException, WritingInformationException {
+		
+		if(clubStatus == null) throw new WritingInformationException("ClubStatus is not valid");
 
 		Club clubRecovered;
 		if (clubStatus.trim().equalsIgnoreCase("Local")) {
@@ -195,14 +120,13 @@ public class LineupsCoachingStaffsServiceImpl implements ILineupsCoachingStaffsS
 
 		return clubRecovered;
 	}
-
-	public void removeIfHasLineupsCoachingStaffs(Lineup lineup) {
-
-		this.lineupsCoachingStaffsDao.findByLineup(lineup).ifPresent(lineupsCoachingStaffs -> {
-
-			lineupsCoachingStaffs.forEach(lineupCoachingStaff -> this.lineupsCoachingStaffsDao
-					.deleteById(lineupCoachingStaff.getLineupCoachingStaffId()));
-
+	
+	private void removeIfHasLineupsCoachingStaffs(Lineup lineup) {
+		
+		List<LineupCoachingStaff> lineupCoachingStaffs = lineupsCoachingStaffsDao.findByLineup(lineup);
+	
+		lineupCoachingStaffs.forEach(lineupCoachingStaff -> {
+			 this.lineupsCoachingStaffsDao.deleteById(lineupCoachingStaff.getLineupCoachingStaffId());
 		});
 	}
 

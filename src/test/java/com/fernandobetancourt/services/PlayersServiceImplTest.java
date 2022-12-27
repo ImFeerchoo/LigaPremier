@@ -19,8 +19,9 @@ import com.fernandobetancourt.exceptions.PlayerNotFoundException;
 import com.fernandobetancourt.model.dao.IPlayersDao;
 import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.Player;
+import com.fernandobetancourt.validators.PlayerValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {PlayersServiceImpl.class, PlayerValidator.class})
 class PlayersServiceImplTest {
 
 	@MockBean

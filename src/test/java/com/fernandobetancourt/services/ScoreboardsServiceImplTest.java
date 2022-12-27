@@ -15,8 +15,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.fernandobetancourt.exceptions.ScoreboardNotFoundException;
 import com.fernandobetancourt.model.dao.IScoreboardsDao;
 import com.fernandobetancourt.model.entity.Scoreboard;
+import com.fernandobetancourt.validators.ScoreboardValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {ScoreboardsServiceImpl.class, ScoreboardValidator.class})
 class ScoreboardsServiceImplTest {
 
 	@MockBean

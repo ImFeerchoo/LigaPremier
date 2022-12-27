@@ -1,6 +1,7 @@
 package com.fernandobetancourt.model.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -86,6 +87,32 @@ public class LineupMatch implements Serializable {
 
 	public void setClubStatus(String clubStatus) {
 		this.clubStatus = clubStatus;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(LineupMatchId, clubStatus, lineup, match);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LineupMatch other = (LineupMatch) obj;
+		return Objects.equals(LineupMatchId, other.LineupMatchId) && Objects.equals(clubStatus, other.clubStatus)
+				&& Objects.equals(lineup, other.lineup) && Objects.equals(match, other.match);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("LineupMatch [LineupMatchId=").append(LineupMatchId).append(", clubStatus=").append(clubStatus)
+				.append(", match=").append(match).append(", lineup=").append(lineup).append("]");
+		return builder.toString();
 	}
 
 	private static final long serialVersionUID = 1L;

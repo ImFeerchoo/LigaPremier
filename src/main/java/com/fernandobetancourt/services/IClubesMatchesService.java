@@ -20,9 +20,4 @@ public interface IClubesMatchesService {
 	//DELETE
 	public abstract ClubMatch deleteClubMatch(Long id) throws InformationNotFoundException;
 	
-	//VALIDATIONS
-	public abstract boolean isClubMatchValidToSave(ClubMatch clubMatch) throws InformationNotFoundException, WritingInformationException;
-	public abstract boolean isClubMatchValidToUpdate(ClubMatch clubMatch) throws InformationNotFoundException, WritingInformationException;
-	public abstract ClubMatch clubMatchExists(Long id) throws InformationNotFoundException;
-	
 }

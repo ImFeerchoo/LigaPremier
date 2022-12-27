@@ -19,8 +19,9 @@ import com.fernandobetancourt.exceptions.CoachingStaffNotFoundException;
 import com.fernandobetancourt.model.dao.ICoachingStaffsDao;
 import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.CoachingStaff;
+import com.fernandobetancourt.validators.CoachingStaffValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {CoachingStaffsServiceImpl.class, CoachingStaffValidator.class})
 class CoachingStaffsServiceImplTest {
 
 	@MockBean

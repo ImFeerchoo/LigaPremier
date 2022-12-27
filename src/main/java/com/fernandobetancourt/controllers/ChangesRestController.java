@@ -44,39 +44,39 @@ public class ChangesRestController {
 		}
 	}
 	
-	@PostMapping("/changes/{clubStatus}")
-	public ResponseEntity<?> addChange(@RequestBody Change change, @PathVariable("clubStatus") String clubStatus){
-		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Change changeSaved = this.changesService.addChange(change, clubStatus);
-			response.put("change", changeSaved);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch (InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		} catch (WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@PutMapping("/changes/{clubStatus}")
-	public ResponseEntity<?> updateChange(@RequestBody Change change, @PathVariable("clubStatus") String clubStatus){
-		Map<String, Object> response = new HashMap<>();
-		
-		try {
-			Change changeUpdated = this.changesService.updateChange(change, clubStatus);
-			response.put("change", changeUpdated);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch (InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		} catch (WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@PostMapping("/changes/{clubStatus}")
+//	public ResponseEntity<?> addChange(@RequestBody Change change, @PathVariable("clubStatus") String clubStatus){
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			Change changeSaved = this.changesService.addChange(change, clubStatus);
+//			response.put("change", changeSaved);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		} catch (InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		} catch (WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+//	
+//	@PutMapping("/changes/{clubStatus}")
+//	public ResponseEntity<?> updateChange(@RequestBody Change change, @PathVariable("clubStatus") String clubStatus){
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			Change changeUpdated = this.changesService.updateChange(change, clubStatus);
+//			response.put("change", changeUpdated);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		} catch (InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		} catch (WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 	
 	@DeleteMapping("/changes/{changeId}")
 	public ResponseEntity<?> deleteChange(@PathVariable("changeId") Long changeId){

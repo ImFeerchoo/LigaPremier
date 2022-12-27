@@ -18,8 +18,9 @@ import com.fernandobetancourt.exceptions.ScoreboardNotFoundException;
 import com.fernandobetancourt.model.dao.IClubesScoreboardsDao;
 import com.fernandobetancourt.model.entity.ClubScoreboard;
 import com.fernandobetancourt.model.entity.Scoreboard;
+import com.fernandobetancourt.validators.ClubScoreboardValidator;
 
-@SpringBootTest
+@SpringBootTest(classes = {ClubesScoreboardsServiceImpl.class, ClubScoreboardValidator.class})
 class ClubesScoreboardsServiceImplTest {
 
 	@MockBean

@@ -8,6 +8,7 @@ import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.LineupPlayerNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.dao.ILineupsPlayersDao;
+import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.LineupPlayer;
 import com.fernandobetancourt.model.entity.Player;
 import com.fernandobetancourt.services.ILineupsService;
@@ -73,5 +74,18 @@ public class LineupPlayerValidator {
 			StringBuilder sb = new StringBuilder().append("LineupPlayer with id ").append(id).append(" has not been found");
 			throw new LineupPlayerNotFoundException(sb.toString());
 		});
+	}
+	
+
+	public boolean playerBelongToClub(Player player, Club club) {
+		
+		if(player.getClub().getClubId() != club.getClubId()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Player with id ").append(player.getPlayerId()).append(" doesn't belong to the")
+			.append(club.getName()).append(" club");
+			throw new AddingLineupPlayerException(sb.toString());
+		}
+		
+		return true;
 	}
 }

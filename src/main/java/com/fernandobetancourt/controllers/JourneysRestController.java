@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fernandobetancourt.exceptions.InformationNotFoundException;
-import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.entity.Journey;
 import com.fernandobetancourt.services.IJourneysService;
 
@@ -39,11 +37,19 @@ public class JourneysRestController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping("/journeys/{journeyId}")
+	@GetMapping("/journey/{journeyId}")
 	public ResponseEntity<?> getJourney(@PathVariable("journeyId") Long id){
 		Map<String, Object> response = new HashMap<>();
 		Journey journeyRecovered = this.journeysService.getJourney(id);
 		response.put("journey", journeyRecovered);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/journeys/{groupId}")
+	public ResponseEntity<?> getJourneysByGroup(@PathVariable("groupId") Long groupId){
+		Map<String, Object> response = new HashMap<>();
+		List<Journey> journeys = journeysService.getJourneysByGroup(groupId);
+		response.put("journeys", journeys);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
