@@ -17,7 +17,6 @@ public class GroupExceptionHandlerConfig {
 	public ResponseEntity<?> addingGroupException(AddingGroupException e){
 		Map<String, Object> response = new HashMap<>();
 		response.put("error", e.getMessage());
-		//Aquí el estado mas bien sería un bad request
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 	

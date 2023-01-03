@@ -35,8 +35,6 @@ public class Journey implements Serializable {
 		this.group = group;
 	}
 
-
-
 	public Long getJourneyId() {
 		return journeyId;
 	}

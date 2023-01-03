@@ -2,11 +2,13 @@ package com.fernandobetancourt.services;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fernandobetancourt.dto.MatchDto;
 import com.fernandobetancourt.exceptions.ClubMatchNotFoundException;
 import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.LineupMatchNotFoundException;
@@ -16,6 +18,8 @@ import com.fernandobetancourt.model.dao.IMatchesDao;
 import com.fernandobetancourt.model.entity.Club;
 import com.fernandobetancourt.model.entity.ClubMatch;
 import com.fernandobetancourt.model.entity.ClubScoreboard;
+import com.fernandobetancourt.model.entity.Group;
+import com.fernandobetancourt.model.entity.Journey;
 import com.fernandobetancourt.model.entity.Lineup;
 import com.fernandobetancourt.model.entity.LineupMatch;
 import com.fernandobetancourt.model.entity.Match;
@@ -27,6 +31,9 @@ public class MatchesServiceImpl implements IMatchesService {
 	
 	@Autowired
 	private IMatchesDao matchesDao;
+	
+	@Autowired
+	private IJourneysService journeysService;
 	
 	@Autowired
 	private IClubesScoreboardsService clubesScoreboardsService;
@@ -54,6 +61,31 @@ public class MatchesServiceImpl implements IMatchesService {
 		List<Match> matches = matchesDao.findAll();
 		if(matches.isEmpty()) throw new MatchNotFoundException("There are not matches available");
 		return matches;
+	}
+	
+	//Implementar tests
+	@Override
+	public List<Match> getMatchesByJourney(Long journeyId) throws InformationNotFoundException{
+		Journey journey = journeysService.getJourney(journeyId);
+		List<Match> matches = matchesDao.findByJourney(journey);
+		if(matches.isEmpty()) throw new MatchNotFoundException("There ain't journeys available to this journey");
+		return matches;
+	}
+	
+	//Implementar tets
+	@Override
+	public List<MatchDto> getMatchesByJourneyWithClubes(Long journeyId) throws InformationNotFoundException{
+		Journey journey = journeysService.getJourney(journeyId);
+		List<Match> matches = matchesDao.findByJourney(journey);
+		if(matches.isEmpty()) throw new MatchNotFoundException("There ain't matches available to this journey");
+		List<MatchDto> matchesResponse = matches.stream()
+						.map(match ->{
+							ClubMatch clubMatch = clubesMatchesService.getClubMatchByMatch(match);
+							return new MatchDto(match, clubMatch);
+						})
+						.collect(Collectors.toList());
+		
+		return matchesResponse;
 	}
 
 	@Override
@@ -118,6 +150,69 @@ public class MatchesServiceImpl implements IMatchesService {
 		this.clubesMatchesService.addClubMatch(new ClubMatch(localClub, visitorClub, matchSaved));
 		
 		return matchSaved;
+	}
+	
+	//Validar en el validador que el status venga dentro del MatchDto
+	@Override
+	public MatchDto addMatch(MatchDto matchDto) throws InformationNotFoundException, WritingInformationException{
+		
+		Match match = new Match();
+		match.setDate(matchDto.getDate());
+		match.setJourney(matchDto.getJourney());
+		match.setReferee(matchDto.getReferee());
+		match.setStadium(matchDto.getStadium());
+		match.setStatus(matchDto.getStatus());
+		
+		
+		Map<String, Club> clubes = matchValidator.isMatchValidToSave(match, matchDto.getLocalClub().getClubId(), matchDto.getVisitorClub().getClubId());
+		
+		//Le asignamos un Scoreboard al match para persistirlo en cascada
+		match.setScoreboard(new Scoreboard());
+		
+		//Persistimos el match y el scoreboard en cascada
+		Match matchSaved = this.matchesDao.save(match);
+		
+		//Crear el DAO y servicio para el ClubScoreboard
+		//Aquí debo de crear los ClubesScoreboards con el scoreboardId de match.getScoreboard.getScoreboardId();
+		//Debo de recibir los clubId como parámetros
+		
+		//Creando el ClubScoreboard del equipo local - Inicio
+		
+		Scoreboard scoreboard = match.getScoreboard(); //A lo mejor y tengo que pedir el scoreboard desde algun servicio
+		
+//		Club localClub = this.clubesService.getClubById(localClubId);
+		Club localClub = clubes.get("local");
+		
+		//En este punto estamos seguros que los clubes existen ya que en la primara validación se checo. Esto se vuelve a checar en la línea de
+		//arriba y en el addClubScoreboard
+		//Igualmente se verifica que el Scoreboard exista en el addClubScoreboard
+		this.clubesScoreboardsService.addClubScoreboard(new ClubScoreboard("Local", scoreboard, localClub));
+		
+		//Creando el ClubScoreboard del equipo local - Final
+		//Creando el ClubScoreboard del equipo visitante - Inicio
+		
+//		Club visitorClub = this.clubesService.getClubById(visitorClubId);
+		Club visitorClub = clubes.get("visitor");
+		
+		this.clubesScoreboardsService.addClubScoreboard(new ClubScoreboard("Visitor", scoreboard, visitorClub));
+		
+		//Creando el ClubScoreboard del equipo visitante - Final
+		
+		//%%%%%%%%%%%%%%%%%%Debo de crear el LineupMatch%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		this.lineupsMatchesService.addLineupMatch(new LineupMatch("Local", matchSaved, new Lineup()));
+		this.lineupsMatchesService.addLineupMatch(new LineupMatch("Visitor", matchSaved, new Lineup()));
+		
+		//%%%%%%%%%%%%%%%%%%Debo de crear el ClubMatch%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		this.clubesMatchesService.addClubMatch(new ClubMatch(localClub, visitorClub, matchSaved));
+		
+		//Ahora retorno un MatchDto
+		
+		matchDto.setMatchId(matchSaved.getMatchId());
+		
+		return matchDto;
+		
 	}
 	
 	//PUT

@@ -1,6 +1,7 @@
 package com.fernandobetancourt.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fernandobetancourt.dto.MatchDto;
 import com.fernandobetancourt.exceptions.InformationNotFoundException;
 import com.fernandobetancourt.exceptions.WritingInformationException;
 import com.fernandobetancourt.model.entity.Match;
@@ -42,23 +45,62 @@ public class MatchesRestController {
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 	}
-
-	@PostMapping("/matches/{localClubId}/{visitorClubId}")
-	public ResponseEntity<?> addMatch(@RequestBody Match match, @PathVariable("localClubId") Long localClubId, @PathVariable("visitorClubId") Long visitorClubId){ 
-
-		Map<String, Object> response = new HashMap<>();
+	
+	@GetMapping("/matchesByJourney/{journeyId}")
+	public ResponseEntity<Map<String, List<?>>> getMatchesByJourney(@PathVariable("journeyId") Long journeyId, @RequestParam(name = "withClubes", required = false) Boolean withClubes){
+		Map<String, List<?>> response = new HashMap<>();
+//		response.put("matches", matchesService.getMatchesByJourney(journeyId));
 		
-		try {
-			Match matchSaved = this.matchesService.addMatch(match, localClubId, visitorClubId);
-			response.put("match", matchSaved);
-			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		}catch(InformationNotFoundException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}catch(WritingInformationException e) {
-			response.put("error", e.getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		if(withClubes == null) withClubes = false;
+		
+		if(withClubes) {
+			response.put("matches", matchesService.getMatchesByJourneyWithClubes(journeyId));
+		}else {
+			response.put("matches", matchesService.getMatchesByJourney(journeyId));
 		}
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+//	@PostMapping("/matches/{localClubId}/{visitorClubId}")
+//	public ResponseEntity<?> addMatch(@RequestBody Match match, @PathVariable("localClubId") Long localClubId, @PathVariable("visitorClubId") Long visitorClubId){ 
+//
+//		Map<String, Object> response = new HashMap<>();
+//		
+//		try {
+//			Match matchSaved = this.matchesService.addMatch(match, localClubId, visitorClubId);
+//			response.put("match", matchSaved);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		}catch(InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		}catch(WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+	
+	@PostMapping("/match")
+	public ResponseEntity<?> addMatch(@RequestBody MatchDto matchDto){ 
+		System.out.println("Entrando al controlador");
+		System.out.println(matchDto);
+		Map<String, MatchDto> response = new HashMap<>();
+		
+		MatchDto matchDtoSaved = matchesService.addMatch(matchDto);
+		response.put("match", matchDtoSaved);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		
+//		try {
+//			Match matchSaved = this.matchesService.addMatch(match, localClubId, visitorClubId);
+//			response.put("match", matchSaved);
+//			return new ResponseEntity<>(response, HttpStatus.CREATED);
+//		}catch(InformationNotFoundException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//		}catch(WritingInformationException e) {
+//			response.put("error", e.getMessage());
+//			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
 	}
 	
 	@PutMapping("/matches/{localClubId}/{visitorClubId}")

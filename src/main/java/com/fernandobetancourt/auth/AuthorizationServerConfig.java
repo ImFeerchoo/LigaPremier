@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 //import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 //import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
-//@Configuration
+@Configuration
 //@EnableAuthorizationServer
 //public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 public class AuthorizationServerConfig{

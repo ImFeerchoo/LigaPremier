@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "matches")
@@ -30,13 +32,15 @@ public class Match implements Serializable {
 
 	private LocalDateTime date;
 
-	@ManyToOne()
+	@ManyToOne
 	@JoinColumn(name = "journey_id", referencedColumnName = "journey_id")
 	private Journey journey;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "scoreboard_id", referencedColumnName = "scoreboard_id")
 	private Scoreboard scoreboard;
+
+	private String status;
 
 	public Match() {
 	}
@@ -109,9 +113,17 @@ public class Match implements Serializable {
 		this.scoreboard = scoreboard;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(date, journey, matchId, referee, scoreboard, stadium);
+		return Objects.hash(date, journey, matchId, referee, scoreboard, stadium, status);
 	}
 
 	@Override
@@ -125,13 +137,17 @@ public class Match implements Serializable {
 		Match other = (Match) obj;
 		return Objects.equals(date, other.date) && Objects.equals(journey, other.journey)
 				&& Objects.equals(matchId, other.matchId) && Objects.equals(referee, other.referee)
-				&& Objects.equals(scoreboard, other.scoreboard) && Objects.equals(stadium, other.stadium);
+				&& Objects.equals(scoreboard, other.scoreboard) && Objects.equals(stadium, other.stadium)
+				&& Objects.equals(status, other.status);
 	}
 
 	@Override
 	public String toString() {
-		return "Match [matchId=" + matchId + ", stadium=" + stadium + ", referee=" + referee + ", date=" + date
-				+ ", journey=" + journey + ", scoreboard=" + scoreboard + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("Match [matchId=").append(matchId).append(", stadium=").append(stadium).append(", referee=")
+				.append(referee).append(", date=").append(date).append(", journey=").append(journey)
+				.append(", scoreboard=").append(scoreboard).append(", status=").append(status).append("]");
+		return builder.toString();
 	}
 
 	private static final long serialVersionUID = 1L;
